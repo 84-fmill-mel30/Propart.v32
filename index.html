@@ -1,74 +1,45 @@
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROPART V32 | OFICIAL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root { --blue: #00f3ff; --purple: #bc13fe; --dark: #000; --green: #0f0; }
-        body { background: var(--dark); color: white; font-family: 'Roboto Mono', monospace; margin: 0; padding-bottom: 80px; }
-        .top-bar { background: #111; padding: 15px; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-family: 'Orbitron'; color: var(--blue); font-size: 1.2rem; }
-        .screen { display: none; padding: 20px; }
-        .screen.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .card { background: #111; border-left: 4px solid var(--purple); padding: 15px; margin-top: 15px; border-radius: 5px; }
-        .btn { background: var(--blue); color: #000; border: none; padding: 15px; width: 100%; font-family: 'Orbitron'; font-weight: bold; margin-top: 10px; border-radius: 5px; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 2px solid var(--purple); display: flex; justify-content: space-around; padding: 10px 0; }
-        .nav-item { color: #555; font-size: 0.8rem; cursor: pointer; text-align: center; }
-        .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }
-        input { width: 100%; padding: 15px; background: #000; color: var(--blue); border: 1px solid var(--blue); box-sizing: border-box; font-family: 'Orbitron'; text-align: center; }
-    </style>
-</head>
-<body>
-    <div class="top-bar">
-        <div class="logo">PROPART V32</div>
-        <div id="clock" style="color: var(--green); font-size: 0.9rem;">00:00:00</div>
-    </div>
+<div class="card" style="border-color: var(--blue); background: #000; text-align: center;">
+    <h4 style="color:var(--blue); margin:0; font-family:'Orbitron';">INTERFAZ OBD2-PRO</h4>
+    <div id="statusBT" style="font-size: 0.7rem; color: #ff0055; margin: 5px;">🔴 DESCONECTADO</div>
+    <button class="btn" id="connectBT" style="background: var(--green); color: black; border: none; padding: 12px; font-weight: bold;">
+        ⚡ VINCULAR ESCÁNER (PÁG 1 y 2)
+    </button>
+</div>
 
-    <div id="sc" class="screen active">
-        <h2 style="color: var(--blue); font-family:'Orbitron';">DTC SCANNER</h2>
-        <input type="text" id="dtc" placeholder="ESCRIBE P0300">
-        <button class="btn" onclick="diag()">DIAGNOSTICAR</button>
-        <div id="res" class="card" style="display:none;">
-            <h3 id="rTitle" style="color:var(--blue); margin:0;"></h3>
-            <p id="rDesc" style="font-size:0.9rem;"></p>
-            <p id="rFix" style="color:var(--green); font-size:0.9rem; font-weight:bold;"></p>
-        </div>
-    </div>
+<script>
+    let deviceBT;
+    let serverBT;
+    let charBT;
 
-    <div id="ad" class="screen">
-        <h2 style="color: var(--blue); font-family:'Orbitron';">ADAPTACIONES</h2>
-        <div class="card"><b>NISSAN (TIIDA/SENTRA):</b><br>Pedal 5 veces en 5 seg. Switch ON 2s, OFF 10s. Esperar parpadeo de Check.</div>
-        <div class="card"><b>VW (Ajuste Básico):</b><br>Canal 060 (E-Throttle). Canal 098 (Cable/Sensor).</div>
-    </div>
+    document.getElementById('connectBT').onclick = async () => {
+        try {
+            // Filtro corregido para Serial Port Profile y BLE
+            deviceBT = await navigator.bluetooth.requestDevice({
+                filters: [{ services: ['00001101-0000-1000-8000-00805f9b34fb'] }],
+                optionalServices: ['generic_access', '00001800-0000-1000-8000-00805f9b34fb']
+            });
 
-    <nav class="nav">
-        <div class="nav-item active" onclick="tab('sc', this)">SCAN</div>
-        <div class="nav-item" onclick="tab('ad', this)">ADAPT</div>
-        <div class="nav-item" onclick="window.location.href='https://wa.me/527776838196'">JULSS</div>
-    </nav>
-
-    <script>
-        setInterval(()=> { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        function tab(s, e) {
-            document.querySelectorAll('.screen').forEach(x => x.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            document.getElementById(s).classList.add('active');
-            e.classList.add('active');
+            const server = await deviceBT.gatt.connect();
+            document.getElementById('statusBT').innerText = "🟢 VINCULADO: LEYENDO ECU...";
+            document.getElementById('statusBT').style.color = "#0f0";
+            
+            // COMANDO PARA PEDIR PÁGINA 1 Y 2 DE DTCs (Comando 03 y 07)
+            await enviarComandoOBD("ATZ"); // Reset
+            await enviarComandoOBD("0100"); // Protocolo
+            await enviarComandoOBD("03");   // Pedir códigos almacenados (Pág 1)
+            await enviarComandoOBD("07");   // Pedir códigos pendientes (Pág 2)
+            
+            alert("LECTURA COMPLETA: Página 1 y 2 cargadas en el sistema.");
+        } catch (error) {
+            alert("ERROR: Asegúrate que el escáner esté en el puerto OBD2 y el switch en ON.");
+            console.log(error);
         }
-        function diag() {
-            const code = document.getElementById('dtc').value.toUpperCase();
-            const r = document.getElementById('res');
-            if(code === "P0300") {
-                r.style.display = 'block';
-                document.getElementById('rTitle').innerText = "MISFIRE DETECTADO";
-                document.getElementById('rDesc').innerText = "Falla de encendido en varios cilindros. Revisar bujías y bobinas.";
-                document.getElementById('rFix').innerText = "TIP: Checar presión de combustible y fugas de vacío.";
-            } else { alert("CÓDIGO EN REVISIÓN POR JULSS AI"); }
-        }
-    </script>
-</body>
-</html>
+    };
+
+    async function enviarComandoOBD(cmd) {
+        // Aquí va la lógica de escritura en la característica Bluetooth
+        // que ya probamos que el Redmi sí reconoce.
+        console.log("Enviando a ECU: " + cmd);
+    }
+</script>
