@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROPART V32 | GOLF MASTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root { --blue: #00f3ff; --purple: #bc13fe; --dark: #000; --green: #0f0; --red: #ff0055; }
+        body { background: var(--dark); color: white; font-family: 'Roboto Mono', monospace; margin: 0; padding-bottom: 90px; }
+        .top-bar { background: #111; padding: 15px; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; }
+        .screen { display: none; padding: 20px; }
+        .screen.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card { background: #111; border: 1px solid #333; border-left: 4px solid var(--purple); padding: 15px; margin-top: 15px; border-radius: 5px; }
+        .btn { background: var(--blue); color: #000; border: none; padding: 15px; width: 100%; font-family: 'Orbitron'; font-weight: bold; margin-top: 10px; border-radius: 5px; cursor: pointer; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 2px solid var(--purple); display: flex; justify-content: space-around; padding: 12px 0; }
+        .nav-item { color: #555; font-size: 0.7rem; text-align: center; flex: 1; }
+        .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }
+        .graph-container { background: #050505; height: 100px; border: 1px solid #222; margin-top: 10px; position: relative; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div style="font-family:'Orbitron'; color:var(--blue);">PROPART GOLF PRO</div>
+        <div id="statusBT" style="color: var(--red); font-size: 0.7rem;">BT: OFF</div>
+    </div>
+
+    <div id="sc" class="screen active">
+        <button class="btn" id="connectBT" style="background:var(--green);">⚡ CONECTAR ESCÁNER (BT 4.0)</button>
+        <div class="card">
+            <h3 style="margin:0; color:var(--blue);">BUSCADOR DTC</h3>
+            <input type="text" id="dtcIn" placeholder="P0300" style="width:100%; padding:12px; background:#000; color:var(--blue); border:1px solid var(--blue); margin-top:10px; text-align:center;">
+            <button class="btn" onclick="diag()">VER REPARACIÓN</button>
+        </div>
+        <div id="res" class="card" style="display:none;">
+            <h4 id="rTitle" style="color:var(--blue); margin:0;"></h4>
+            <p id="rDesc" style="font-size:0.8rem;"></p>
+            <p id="rFix" style="color:var(--green); font-weight:bold;"></p>
+        </div>
+    </div>
+
+    <div id="lv" class="screen">
+        <h3 style="color:var(--blue); font-family:'Orbitron';">DATOS EN VIVO</h3>
+        <div class="card">
+            <b>INJECTOR PULSE (2.5ms):</b>
+            <div class="graph-container">
+                <svg viewBox="0 0 100 30" width="100%" height="100%"><path d="M0 25 L20 25 L20 10 L25 10 L25 25 L100 25" stroke="lime" fill="none"><animate attributeName="d" dur="1s" repeatCount="indefinite" values="M0 25 L20 25 L20 10 L25 10 L25 25 L100 25; M0 25 L40 25 L40 10 L45 10 L45 25 L100 25; M0 25 L20 25 L20 10 L25 10 L25 25 L100 25"/></path></svg>
+            </div>
+        </div>
+        
+        <div class="card">
+            <b>SONDA LAMBDA (V):</b>
+            <div class="graph-container">
+                <svg viewBox="0 0 100 30" width="100%" height="100%"><path d="M0 15 Q 10 5, 20 15 T 40 15 T 60 15 T 80 15 T 100 15" stroke="cyan" fill="none"><animate attributeName="d" dur="2s" repeatCount="indefinite" values="M0 15 Q 10 5, 20 15 T 40 15 T 60 15 T 80 15 T 100 15; M0 15 Q 10 25, 20 15 T 40 15 T 60 15 T 80 15 T 100 15; M0 15 Q 10 5, 20 15 T 40 15 T 60 15 T 80 15 T 100 15"/></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <div id="in" class="screen">
+        <h3 style="color:var(--blue); font-family:'Orbitron';">PINOUTS GOLF</h3>
+        <div class="card"><b>ECU Motronic:</b> Pin 1 (GND), Pin 3 (+12V Bat), Pin 62 (+12V Ign).</div>
+        <div class="card"><b>MAF:</b> Pin 1 (5V), Pin 2 (GND), Pin 3 (Señal).</div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-item active" onclick="tab('sc', this)">SCAN</div>
+        <div class="nav-item" onclick="tab('lv', this)">LIVE</div>
+        <div class="nav-item" onclick="tab('in', this)">INFO</div>
+        <div class="nav-item" onclick="window.location.href='https://wa.me/527776838196'">JULSS</div>
+    </nav>
+
+    <script>
+        function tab(s, e) {
+            document.querySelectorAll('.screen').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            document.getElementById(s).classList.add('active');
+            e.classList.add('active');
+        }
+
+        document.getElementById('connectBT').onclick = async () => {
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: ['00001101-0000-1000-8000-00805f9b34fb'] }]
+                });
+                await device.gatt.connect();
+                document.getElementById('statusBT').innerText = "BT: ONLINE";
+                document.getElementById('statusBT').style.color = "var(--green)";
+                alert("CONEXIÓN EXITOSA PÁGINA 1 Y 2");
+            } catch (e) { alert("Error de vinculación. Revisa el BT."); }
+        };
+
+        function diag() {
+            const c = document.getElementById('dtcIn').value.toUpperCase();
+            const r = document.getElementById('res');
+            const d = {
+                "P0300": ["Falla Encendido Aleatoria", "Misfire en cilindros.", "TIP: Checar Bobinas y Bujías."],
+                "P0101": ["Rango Sensor MAF", "Señal implausible.", "TIP: Limpiar Sensor o fugas de vacío."]
+            };
+            if(d[c]) {
+                r.style.display='block';
+                document.getElementById('rTitle').innerText = d[c][0];
+                document.getElementById('rDesc').innerText = d[c][1];
+                document.getElementById('rFix').innerText = d[c][2];
+            } else { alert("JULSS ANALIZANDO CÓDIGO..."); }
+        }
+    </script>
+</body>
+</html>
