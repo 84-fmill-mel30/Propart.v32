@@ -3,226 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ELECTRIPARTES MILLÁN V34 - FINAL</title>
+    <title>MILLÁN SISTEMA V36 - GOOGLE READY</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #ffd700; --dark: #111; --bg: #f4f4f4; --success: #00c851; }
-        body { font-family: sans-serif; margin: 0; padding: 0; background: var(--bg); padding-bottom: 100px; overflow-x: hidden; }
-        
-        .header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .logo { font-weight: 900; font-size: 1.1rem; }
-        .logo span { color: var(--primary); }
-        .nav-btn { background: none; border: none; color: #888; font-size: 1.6rem; margin-left: 20px; cursor: pointer; }
-        .nav-btn.active { color: var(--primary); transform: scale(1.1); }
-
-        .page { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
+        :root { --primary: #ffd700; --dark: #111; --bg: #f4f4f4; --success: #00c851; --google: #4285F4; }
+        body { font-family: sans-serif; margin: 0; padding: 0; background: var(--bg); padding-bottom: 80px; }
+        .header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .nav-btn { background: none; border: none; color: #888; font-size: 1.5rem; margin-left: 20px; cursor: pointer; }
+        .nav-btn.active { color: var(--primary); }
+        .page { display: none; padding: 15px; max-width: 900px; margin: 0 auto; }
         .page.active { display: block; }
-
-        /* PUBLICIDAD INICIAL */
-        .servicios-box { background: #1a1a1a; color: white; padding: 20px; border-radius: 15px; border: 2px solid var(--primary); margin-bottom: 20px; text-align: center; }
-        .servicios-box h2 { color: var(--primary); margin: 0 0 10px; font-size: 1.4rem; }
-        .contacto-info { background: #333; padding: 10px; border-radius: 10px; margin-top: 15px; font-weight: bold; font-size: 0.85rem; line-height: 1.5; }
-
-        /* BUSCADOR */
-        .search-box { width: 100%; padding: 18px; border-radius: 35px; border: 1px solid #ccc; font-size: 1.2rem; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; box-sizing: border-box; }
-        
-        /* TARJETAS */
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
-        .price { font-size: 1.5rem; font-weight: 900; color: var(--success); }
-        
-        /* EL YULS */
-        .yuls-float { position: fixed; bottom: 20px; right: 20px; width: 85px; height: 85px; background: #000; border: 4px solid var(--primary); border-radius: 50%; color: var(--primary); font-size: 1.3rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 25px rgba(0,0,0,0.6); z-index: 2000; cursor: pointer; text-align: center; line-height: 1; }
-        .yuls-float.active { background: #ff4444; border-color: white; animation: pulse 1s infinite; }
-
-        /* TABLAS */
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
-        th { background: #333; color: white; }
-        
-        #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 10px; display: none; background: black; }
-
-        @keyframes pulse { 0% {transform: scale(1.1);} 100% {transform: scale(1);} }
+        .search-box { width: 100%; padding: 15px; border-radius: 30px; border: 1px solid #ccc; font-size: 1.1rem; text-align: center; margin-bottom: 10px; }
+        .btn-google { width: 100%; padding: 12px; background: white; border: 2px solid var(--google); color: var(--google); border-radius: 25px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .yuls-btn { position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; background: #000; border: 3px solid var(--primary); border-radius: 50%; color: var(--primary); font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 2000; cursor: pointer; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #222; color: white; }
     </style>
 </head>
 <body>
 
 <header class="header">
-    <div class="logo">MILLÁN <span>SISTEMA</span></div>
+    <div style="font-weight:900;">MILLÁN <span style="color:var(--primary)">SISTEMA</span></div>
     <nav>
-        <button onclick="showPage('home')" id="n-home" class="nav-btn active"><i class="fas fa-home"></i></button>
+        <button onclick="showPage('home')" id="n-home" class="nav-btn active"><i class="fas fa-search"></i></button>
         <button onclick="showPage('pos')" id="n-pos" class="nav-btn"><i class="fas fa-shopping-cart"></i></button>
-        <button onclick="askPin()" id="n-admin" class="nav-btn"><i class="fas fa-cog"></i></button>
+        <button onclick="askPin()" id="n-admin" class="nav-btn"><i class="fas fa-user-shield"></i></button>
     </nav>
 </header>
 
-<div class="yuls-float" id="btn-yuls" onclick="startYuls()">
-    <div>YULS<br><span style="font-size:0.6rem;color:white">EL JEFE</span></div>
-</div>
+<div class="yuls-btn" id="yuls-trigger" onclick="startYuls()">YULS</div>
 
 <div id="home" class="page active">
-    <div class="servicios-box">
-        <h2>ELECTRIPARTES MILLÁN</h2>
-        <p><b>Técnico Automotriz Especializado</b></p>
-        <p>Reparación de Módulos de Computadora • Escáner • Osciloscopio</p>
-        <div class="contacto-info">
-            <i class="fab fa-whatsapp"></i> 777 683 8196 / 221 956 7392<br>
-            <i class="far fa-envelope"></i> electripartmillan@gmail.com
-        </div>
-    </div>
-    <input type="text" id="main-in" class="search-box" placeholder="Busca pieza o habla con el Yuls..." onkeyup="doSearch(this.value)">
-    <div id="results-view" style="display:none; margin-top:20px;">
-        <div id="list-results"></div>
-    </div>
+    <input type="text" id="main-search" class="search-box" placeholder="Busca pieza carnal..." onkeyup="doSearch(this.value)">
+    
+    <button class="btn-google" onclick="searchInGoogle()">
+        <i class="fab fa-google"></i> BUSCAR EN GOOGLE IMÁGENES
+    </button>
+
+    <div id="search-results"></div>
 </div>
 
 <div id="pos" class="page">
-    <h2>CARRITO / COBRO</h2>
-    <button onclick="toggleCam()" style="width:100%; padding:15px; background:#333; color:white; border:none; border-radius:10px; margin-bottom:15px; font-weight:bold;"><i class="fas fa-camera"></i> ESCANEAR CÓDIGO</button>
-    <div id="reader"></div>
-    <div id="cart-list" style="background:white; border-radius:10px; padding:10px; min-height:50px;"></div>
-    <div style="text-align:right; margin-top:20px;"><h1>Total: <span id="cart-total">$0</span></h1></div>
-    <button onclick="finishSale()" style="width:100%; padding:20px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold; font-size:1.2rem;">IMPRIMIR TICKET</button>
+    <h2>LISTA DE COBRO</h2>
+    <div id="cart-items"></div>
+    <div style="text-align:right; margin-top:20px;">
+        <h2 id="total-txt">Total: $0</h2>
+        <button onclick="finishSale()" style="width:100%; padding:20px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold;">IMPRIMIR TICKET</button>
+    </div>
 </div>
 
 <div id="admin" class="page">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2>EXISTENCIAS</h2>
-        <button onclick="showPage('home')" style="color:red; font-weight:bold; border:none; background:none;">SALIR</button>
-    </div>
-    <input type="text" placeholder="Filtrar por nombre o código..." onkeyup="drawAdmin(this.value)" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ccc; margin:10px 0;">
-    <div style="overflow-x:auto;">
-        <table>
-            <thead><tr><th>Pieza</th><th>Costo</th><th>Venta</th></tr></thead>
-            <tbody id="admin-tbody"></tbody>
-        </table>
-    </div>
-    <button onclick="resetAll()" style="width:100%; margin-top:40px; padding:15px; color:red; border:1px solid red; background:none; border-radius:10px;">⚠️ REINICIAR SISTEMA (CARGAR LISTA)</button>
+    <h2>CONTROL DE STOCK</h2>
+    <div id="inv-summary" style="background:black; color:white; padding:15px; border-radius:10px; margin-bottom:10px;"></div>
+    <table>
+        <thead><tr><th>Pieza</th><th>Stock</th><th>Venta</th></tr></thead>
+        <tbody id="admin-list"></tbody>
+    </table>
 </div>
 
 <script>
-    // --- INVENTARIO COMPLETO REVISADO ---
-    const MASTER_LIST = [
-        {c:"B55", n:"Modulo Encendido Nissan Tsuru 16V", cost:543},
-        {c:"MHZ2030A", n:"Modulo Encendido Nissan", cost:543},
-        {c:"PASCHEVY", n:"Pastilla Ignicion Chevy", cost:75},
-        {c:"PC10530941", n:"Porta Carbon GM Aveo Usatech", cost:75},
-        {c:"PC698309", n:"Porta Carbon Mitsubishi Grande", cost:75},
-        {c:"PC336246", n:"Porta Carbon Ford Nissan 336 246", cost:69},
-        {c:"PC336245", n:"Porta Carbon Nissan Chevy Bosch", cost:69},
-        {c:"PC698104", n:"Porta Carbon Nissan Colec. Hueco", cost:81},
-        {c:"PC698318", n:"Porta Carbon Nissan Urvan 2.4", cost:75},
-        {c:"PC698330", n:"Porta Carbon Mitsubishi Urvan 2.5", cost:81},
-        {c:"1224", n:"Bendix Zen Ford Motorcraft 10D", cost:114},
-        {c:"E7691809", n:"Engrane Marcha Dodge (2)", cost:30},
-        {c:"E7691810", n:"Engrane Marcha Ford Bosch (1)", cost:30},
-        {c:"EM4", n:"Engrane Marcha Nissan (4) y Chevy", cost:29},
-        {c:"BOM-TSURU", n:"Bomba Gasolina Bosch Tsuru III", cost:330},
-        {c:"RIH738TP", n:"Regulador Nissan Hitachi RIH 738", cost:317},
-        {c:"RF784TR", n:"Regulador Ford F784 Negro", cost:116},
-        {c:"67HELLA", n:"Foco 67 Hella (Suelto)", cost:3.30},
-        {c:"158HELLA", n:"Foco 158 Pellizco (Suelto)", cost:2.40},
-        {c:"1034HELLA", n:"Foco 1034 Hella (Suelto)", cost:3.50},
-        {c:"FC15A", n:"Fusible Clavija 15 Amp", cost:0.85},
-        {c:"CP1830M", n:"Cable Plastico 18 (30m)", cost:88},
-        {c:"A618114ASS", n:"Armadura Nissan Hitachi PMGR 114", cost:264},
-        {c:"BM70582", n:"Bulbo Motovent VW Caribe 82/68", cost:98}
+    // Tu inventario real
+    const RAW_DATA = [
+        {c:"B55", n:"Modulo Tsuru 16V", s:5, cost:543},
+        {c:"PC336246", n:"Portacarbón Ford/Nissan", s:10, cost:69},
+        {c:"1224", n:"Bendix Zen 10D", s:4, cost:114},
+        {c:"FC15A", n:"Fusible Clavija 15A", s:100, cost:0.85},
+        {c:"67HELLA", n:"Foco 67 Hella", s:50, cost:3.30}
     ];
 
-    let db = []; let cart = []; let scanner = null;
+    let db = []; let cart = [];
 
     function init() {
-        let saved = localStorage.getItem('millan_v34_db');
+        let saved = localStorage.getItem('millan_v36_db');
         if(saved) db = JSON.parse(saved);
-        else { db = JSON.parse(JSON.stringify(MASTER_LIST)); db.forEach(p => p.price = Math.ceil(p.cost * 1.3)); localStorage.setItem('millan_v34_db', JSON.stringify(db)); }
+        else {
+            db = RAW_DATA.map(p => ({...p, p: Math.ceil(p.cost * 1.3)}));
+            localStorage.setItem('millan_v36_db', JSON.stringify(db));
+        }
+        renderAdmin();
     }
-    init();
 
-    function showPage(id) { 
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
-        document.getElementById(id).classList.add('active'); 
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('n-'+id).classList.add('active');
-        if(id==='pos') drawCart(); 
-        if(id==='admin') drawAdmin(""); 
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     }
 
     function doSearch(q) {
-        if(!q) { document.getElementById('results-view').style.display='none'; return; }
-        q = q.toUpperCase();
-        document.getElementById('results-view').style.display = 'block';
-        let res = db.filter(p => p.n.toUpperCase().includes(q) || p.c.toUpperCase().includes(q));
-        const list = document.getElementById('list-results'); list.innerHTML = "";
-        res.forEach(p => { list.innerHTML += `<div class="card"><div><b>${p.n}</b><br><small>${p.c}</small></div><div style="text-align:right;"><div class="price">$${p.price}</div><button onclick="toCart('${p.c}')" style="background:#000;color:#fff;border:none;padding:8px;border-radius:5px;">Agregar</button></div></div>`; });
+        const resDiv = document.getElementById('search-results');
+        if(!q) { resDiv.innerHTML = ""; return; }
+        let filtered = db.filter(p => p.n.toUpperCase().includes(q.toUpperCase()));
+        
+        if(filtered.length === 0) {
+            resDiv.innerHTML = `<p style="text-align:center; color:red; font-weight:bold;">No la tengo en inventario carnal. Dale al botón de Google arriba.</p>`;
+        } else {
+            resDiv.innerHTML = filtered.map(p => `
+                <div class="card">
+                    <div><b>${p.n}</b><br><small>Stock: ${p.s}</small></div>
+                    <div style="text-align:right">
+                        <div style="color:green; font-weight:bold;">$${p.p}</div>
+                        <button onclick="addToCart('${p.c}')">Anotar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
     }
 
-    function toCart(c) { let item = db.find(x => x.c === c); if(item) { cart.push(item); drawCart(); alert("¡Anotado carnal!"); } }
-    function drawCart() { let t=0; const d=document.getElementById('cart-list'); d.innerHTML=""; cart.forEach((p,i)=>{ t+=p.price; d.innerHTML+=`<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee;"><span>${p.n}</span><span>$${p.price} <b onclick="cart.splice(${i},1);drawCart()" style="color:red;cursor:pointer">X</b></span></div>`; }); document.getElementById('cart-total').innerText="$"+t; }
-    function finishSale() { if(cart.length>0){ window.print(); cart=[]; drawCart(); } }
-
-    function askPin() { let p = prompt("PIN:"); if(p==="1234") showPage('admin'); }
-    function drawAdmin(f) { 
-        f = f.toUpperCase(); const b = document.getElementById('admin-tbody'); b.innerHTML = ""; 
-        db.forEach(p => { if(p.n.toUpperCase().includes(f) || p.c.toUpperCase().includes(f)) b.innerHTML += `<tr><td><b>${p.n}</b><br><small>${p.c}</small></td><td>$${p.cost}</td><td style="color:green;font-weight:bold;">$${p.price}</td></tr>`; }); 
-    }
-    function resetAll() { if(confirm("¿Recargar inventario original?")) { localStorage.clear(); location.reload(); } }
-
-    function toggleCam() {
-        const r = document.getElementById('reader');
-        if(r.style.display === 'block'){ r.style.display='none'; scanner.clear(); }
-        else { r.style.display='block'; scanner = new Html5QrcodeScanner("reader", {fps:10, qrbox:250}); scanner.render(txt => toCart(txt)); }
+    function searchInGoogle() {
+        let q = document.getElementById('main-search').value;
+        if(!q) q = "refaccion automotriz";
+        window.open(`https://www.google.com/search?tbm=isch&q=${q}`, '_blank');
     }
 
-    // --- YULS INTERACTIVO ---
+    function addToCart(code) {
+        let p = db.find(x => x.c === code);
+        if(p && p.s > 0) {
+            cart.push(p);
+            p.s--;
+            localStorage.setItem('millan_v36_db', JSON.stringify(db));
+            alert("Anotado!");
+            renderAdmin();
+        }
+    }
+
+    function renderAdmin() {
+        const list = document.getElementById('admin-list');
+        list.innerHTML = db.map(p => `<tr><td>${p.n}</td><td>${p.s}</td><td>$${p.p}</td></tr>`).join('');
+    }
+
+    function askPin() { if(prompt("PIN:")==="1234") showPage('admin'); }
+
+    // --- EL YULS ---
     function startYuls() {
-        if(!window.webkitSpeechRecognition) return alert("Usa Chrome carnal");
-        const recognition = new webkitSpeechRecognition();
-        recognition.lang = "es-MX";
-        document.getElementById('btn-yuls').classList.add('active');
-        speak("¿Qué onda Millán? ¿Qué pieza buscamos carnal?");
-
-        recognition.onresult = (e) => {
-            let text = e.results[0][0].transcript.toLowerCase();
-            let search = text.replace(/yuls|jefe|busca|tienes|hay|el|la|un|una|de|válvulas|valvulas/g, "").trim();
-            if(!search) return;
-
-            let words = search.split(" ");
-            let found = db.find(p => words.every(w => p.n.toLowerCase().includes(w)));
-
-            if(found) {
-                speak("¡Esa sí la tengo carnal! Es el " + found.n + " en " + found.price + " varos. ¿Quieres que lo agregue al carrito?", () => {
-                    setTimeout(() => escucharConfirmacion(found), 600);
-                });
-                showPage('home'); document.getElementById('main-in').value = search; doSearch(search);
+        const rec = new webkitSpeechRecognition();
+        rec.lang = "es-MX";
+        rec.onresult = (e) => {
+            let t = e.results[0][0].transcript.toLowerCase();
+            let p = db.find(x => t.includes(x.n.toLowerCase()));
+            if(p) {
+                speak(`¡Simón! Del ${p.n} tengo ${p.s} piezas. Cuesta ${p.p} varos.`);
+                doSearch(p.n);
             } else {
-                speak("N'ombre Millán, esa no la topo carnal.");
+                speak("Esa no la tengo en el estante carnal, ¿la buscamos en el Google?");
+                setTimeout(() => { searchInGoogle(); }, 2000);
             }
         };
-        recognition.onend = () => document.getElementById('btn-yuls').classList.remove('active');
-        recognition.start();
+        rec.start();
     }
 
-    function escucharConfirmacion(item) {
-        const confirmRec = new webkitSpeechRecognition();
-        confirmRec.lang = "es-MX";
-        confirmRec.onresult = (e) => {
-            let res = e.results[0][0].transcript.toLowerCase();
-            if(res.includes("si") || res.includes("agrega") || res.includes("simon") || res.includes("imprime")) {
-                toCart(item.c);
-                speak("¡Arre carnal! Lo imprimo de volada.");
-                setTimeout(() => { finishSale(); }, 1200);
-            }
-        };
-        confirmRec.start();
-    }
-
-    function speak(m, cb) {
+    function speak(m) {
         window.speechSynthesis.cancel();
-        let u = new SpeechSynthesisUtterance(m);
-        u.lang = "es-MX"; u.rate = 1.1;
-        if(cb) u.onend = cb;
-        window.speechSynthesis.speak(u);
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(m));
     }
+
+    init();
 </script>
 </body>
 </html>
