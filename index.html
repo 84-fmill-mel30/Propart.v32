@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MILLÁN APP V24</title>
+    <title>MILLÁN APP V25</title>
     <style>
         :root { --primary: #ffd700; --dark: #111; --bg: #f4f4f4; --success: #00c851; --info: #33b5e5; }
         body { font-family: sans-serif; margin: 0; padding: 0; background: var(--bg); padding-bottom: 80px; overflow-x: hidden; }
@@ -108,7 +108,6 @@
 </div>
 
 <script>
-    // --- INVENTARIO REAL ---
     const MASTER_ITEMS = [
         {c:"E7691809", n:"Engrane Marcha Dodge (2)", cost:30}, {c:"E7691810", n:"Engrane Marcha Ford Bosch (1)", cost:30},
         {c:"EM4", n:"Engrane Marcha Nissan (4) y Chevy", cost:29}, {c:"1224", n:"Bendix Zen Ford Motorcraft 10D", cost:114},
@@ -125,15 +124,15 @@
     let margin = 30;
 
     window.onload = () => {
-        let savedDb = localStorage.getItem('millan_v24_db');
-        let savedMg = localStorage.getItem('millan_v24_mg');
+        let savedDb = localStorage.getItem('millan_v25_db');
+        let savedMg = localStorage.getItem('millan_v25_mg');
         if(savedDb) db = JSON.parse(savedDb);
         else { db = JSON.parse(JSON.stringify(MASTER_ITEMS)); updatePrices(); }
         if(savedMg) margin = parseInt(savedMg);
         document.getElementById('m-val').value = margin;
     };
 
-    function save() { localStorage.setItem('millan_v24_db', JSON.stringify(db)); localStorage.setItem('millan_v24_mg', margin); }
+    function save() { localStorage.setItem('millan_v25_db', JSON.stringify(db)); localStorage.setItem('millan_v25_mg', margin); }
 
     function updatePrices() {
         let f = 1 + (margin/100);
@@ -151,31 +150,34 @@
     }
 
     function doSearch(q) {
+        if(!q) { backHome(); return; }
         q = q.toUpperCase();
         const gView = document.getElementById('google-view');
         const rView = document.getElementById('results-view');
         const list = document.getElementById('list-results');
-        if(q.length > 0) {
-            gView.style.display = 'none'; rView.style.display = 'block';
-            document.getElementById('top-in').value = q;
-            let res = db.filter(p => p.n.toUpperCase().includes(q) || p.c.toUpperCase().includes(q));
-            list.innerHTML = "";
-            if(res.length === 0) list.innerHTML = `<div style="text-align:center; padding:30px;">No hay existencia carnal.</div>`;
-            else res.forEach(p => {
-                list.innerHTML += `<div class="card"><div><b>${p.n}</b><br><small>${p.c}</small></div><div style="text-align:right;"><div class="price">$${p.price}</div><button class="btn-add" onclick="toCart('${p.c}')">AGREGAR</button></div></div>`;
-            });
-        } else { backHome(); }
+        
+        gView.style.display = 'none'; rView.style.display = 'block';
+        document.getElementById('top-in').value = q;
+        
+        // Búsqueda flexible: busca si el nombre contiene las palabras
+        let res = db.filter(p => p.n.toUpperCase().includes(q) || p.c.toUpperCase().includes(q));
+        list.innerHTML = "";
+        
+        if(res.length === 0) list.innerHTML = `<div style="text-align:center; padding:30px;">Híjole patrón, no encontré "${q}" en el inventario.</div>`;
+        else res.forEach(p => {
+            list.innerHTML += `<div class="card"><div><b>${p.n}</b><br><small>${p.c}</small></div><div style="text-align:right;"><div class="price">$${p.price}</div><button class="btn-add" onclick="toCart('${p.c}')">AGREGAR</button></div></div>`;
+        });
     }
 
     function backHome() { document.getElementById('results-view').style.display = 'none'; document.getElementById('google-view').style.display = 'flex'; document.getElementById('main-in').value = ""; }
 
-    function goGoogle() { window.open("https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(document.getElementById('main-in').value || "Refaccion"), "_blank"); }
+    function goGoogle() { window.open("https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(document.getElementById('main-in').value || document.getElementById('top-in').value || "Refaccion"), "_blank"); }
 
     function toCart(c) { cart.push(db.find(x => x.c === c)); alert("Anotado patrón."); }
 
     function drawCart() {
         const div = document.getElementById('cart-list'); let t = 0; div.innerHTML = "";
-        cart.forEach((p, i) => { t += p.price; div.innerHTML += `<div style="background:white; padding:15px; margin-bottom:5px; border-radius:10px; display:flex; justify-content:space-between;"><span>${p.n}</span><span>$${p.price} <b style="color:red;" onclick="delCart(${i})">X</b></span></div>`; });
+        cart.forEach((p, i) => { t += p.price; div.innerHTML += `<div style="background:white; padding:15px; margin-bottom:5px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #ddd;"><span>${p.n}</span><span>$${p.price} <b style="color:red;" onclick="delCart(${i})">X</b></span></div>`; });
         document.getElementById('cart-total').innerText = "$" + t;
     }
     function delCart(i) { cart.splice(i, 1); drawCart(); }
@@ -191,34 +193,38 @@
     function setMargin() { margin = parseInt(document.getElementById('m-val').value); updatePrices(); drawAdmin(""); }
     function resetAll() { localStorage.clear(); location.reload(); }
 
-    // --- EL COMPITA INTELIGENTE ---
+    // --- EL COMPITA INTELIGENTE V25 ---
     function startCompita() {
         if(!('webkitSpeechRecognition' in window)) return alert("Usa Chrome carnal.");
         const btn = document.getElementById('btn-compita');
         btn.classList.add('active');
-        const rec = new webkitSpeechRecognition(); rec.lang = "es-MX";
+        const rec = new webkitSpeechRecognition(); 
+        rec.lang = "es-MX";
+        rec.continuous = false;
         
         rec.onresult = (e) => {
             let t = e.results[0][0].transcript.toLowerCase();
-            // LIMPIAR LO QUE ESCUCHA EL CHALÁN
-            let q = t.replace("compita", "").replace("busca", "").replace("oye", "").replace("tienes", "").replace("hay", "").trim();
+            // Limpieza de palabras de relleno
+            let q = t.replace(/compita|busca|oye|tienes|hay|una|un|la|el|los|las/g, "").trim();
             
-            if(q === "") { speak("¿Qué pasó patrón? Dígame la pieza."); return; }
+            if(q === "") { speak("¿Qué pasó patrón? Dígame qué pieza busca."); return; }
             
-            // MOSTRAR VISUALMENTE
             showPage('home');
             doSearch(q);
 
-            // BUSCAR EN LA BASE DE DATOS REAL
+            // Búsqueda parcial: busca el término dentro de los nombres de la BD
             let found = db.find(x => x.n.toLowerCase().includes(q) || x.c.toLowerCase().includes(q));
             
-            if(found) speak("Simón patrón, sí hay " + found.n + ". Cuesta " + found.price + " varos.");
-            else speak("Híjole patrón, no lo topo en existencia.");
+            if(found) {
+                speak("Simón patrón, sí hay " + found.n + ". Cuesta " + found.price + " varos.");
+            } else {
+                speak("Híjole patrón, no lo topo en existencia. ¿Lo buscamos en Google?");
+            }
         };
         rec.onend = () => btn.classList.remove('active');
         rec.start();
     }
-    function speak(m) { window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(m); u.lang = "es-MX"; u.rate = 1.1; window.speechSynthesis.speak(u); }
+    function speak(m) { window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(m); u.lang = "es-MX"; u.rate = 1.0; window.speechSynthesis.speak(u); }
 </script>
 </body>
 </html>
