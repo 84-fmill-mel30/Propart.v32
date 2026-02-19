@@ -2,287 +2,170 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refaccionaria Millán - V20 DESGLOSADA</title>
-    
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MILLÁN APP V27 - YULS EDITION</title>
     <style>
-        :root { --primary: #ffd700; --dark: #111; --bg: #f4f4f4; --success: #00c851; --info: #33b5e5; }
-        body { font-family: sans-serif; margin: 0; padding: 0; background: var(--bg); color: #333; padding-bottom: 80px; }
-        
-        /* HEADER */
-        header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 1.2rem; font-weight: 900; }
+        :root { --primary: #ffd700; --dark: #111; --bg: #f4f4f4; --success: #00c851; }
+        body { font-family: sans-serif; margin: 0; padding: 0; background: var(--bg); padding-bottom: 80px; overflow-x: hidden; }
+        .header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .logo { font-weight: 900; font-size: 1.2rem; letter-spacing: 1px; }
         .logo span { color: var(--primary); }
-        .status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; margin-left: 5px; }
-
-        nav button { background: none; border: none; color: #888; font-size: 1.5rem; margin-left: 15px; cursor: pointer; }
-        nav button.active { color: var(--primary); transform: scale(1.2); }
-
-        .page { display: none; padding: 10px; max-width: 800px; margin: 0 auto; }
+        .nav-btn { background: none; border: none; color: #888; font-size: 1.5rem; margin-left: 20px; cursor: pointer; padding: 5px; outline: none; }
+        .nav-btn.active { color: var(--primary); transform: scale(1.1); }
+        .page { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
         .page.active { display: block; }
-
-        /* HOME */
-        .hero-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; text-align: center; }
-        .big-logo { font-size: 3rem; font-weight: 900; color: var(--dark); margin-bottom: 10px; }
+        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; text-align: center; }
+        .big-logo { font-size: 2.8rem; font-weight: 900; margin-bottom: 10px; color: var(--dark); }
         .big-logo span { color: var(--primary); }
-
-        .search-container { background: white; padding: 10px; position: sticky; top: 60px; z-index: 900; border-bottom: 2px solid #ddd; display: none; }
-        .main-input { width: 100%; padding: 15px; border-radius: 30px; border: 1px solid #ccc; font-size: 1.2rem; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
-        .center-input { width: 90%; padding: 15px; border-radius: 30px; border: 1px solid #ccc; font-size: 1.2rem; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; margin-bottom: 20px; }
-
-        /* LISTA */
-        .card { background: white; padding: 15px; margin-top: 10px; border-radius: 8px; border-bottom: 3px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-        .card-info { flex-grow: 1; }
-        .card-title { font-weight: bold; font-size: 1rem; color: #333; }
-        .card-code { font-size: 0.8rem; color: #666; background: #eee; padding: 2px 5px; border-radius: 4px; display: inline-block; margin-top: 5px; }
-        .card-price { font-size: 1.4rem; font-weight: 900; color: var(--success); text-align: right; min-width: 90px; }
-        .btn-add { background: var(--dark); color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; margin-top: 5px; cursor: pointer; width: 100%; }
-
-        /* ADMIN TABLE (CORREGIDA) */
-        .table-responsive { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: var(--dark); color: white; padding: 12px; text-align: left; font-size: 0.9rem; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        
-        .cost-col { color: #666; } /* Color para costo */
-        .price-col { color: var(--success); font-weight: bold; font-size: 1.1rem; } /* Color para venta */
-
-        /* EL COMPITA */
-        #compita-btn { position: fixed; bottom: 20px; right: 20px; width: 70px; height: 70px; background: #222; border: 2px solid var(--primary); border-radius: 50%; color: var(--primary); font-size: 2rem; z-index: 9999; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        #compita-btn.listening { background: #ff4444; color: white; animation: pulse 1s infinite; }
+        .search-box { width: 90%; max-width: 500px; padding: 18px; border-radius: 35px; border: 1px solid #ccc; font-size: 1.2rem; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .price { font-size: 1.5rem; font-weight: 900; color: var(--success); }
+        .btn-add { background: var(--dark); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; margin-top: 5px; cursor: pointer; }
+        .yuls-float { position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; background: #000; border: 4px solid var(--primary); border-radius: 50%; color: var(--primary); font-size: 1.4rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 25px rgba(0,0,0,0.6); z-index: 2000; cursor: pointer; text-align: center; line-height: 1; }
+        .yuls-float span { font-size: 0.7rem; display: block; color: white; }
+        .yuls-float.active { background: #ff4444; color: white; border-color: white; animation: pulse 1s infinite; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.98); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .pin-input { font-size: 2.5rem; width: 160px; text-align: center; border: 2px solid var(--dark); border-radius: 12px; margin: 20px 0; }
         @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.1);} 100% {transform: scale(1);} }
-
-        /* LOGIN */
-        #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:5000; display:none; flex-direction:column; justify-content:center; align-items:center; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">MILLÁN <span>V20</span> <div id="status" class="status-dot"></div></div>
-    <nav>
-        <button onclick="nav('home')" id="btn-home" class="active"><i class="fas fa-search"></i></button>
-        <button onclick="nav('pos')" id="btn-pos"><i class="fas fa-shopping-cart"></i></button>
-        <button onclick="openAdmin()" id="btn-admin"><i class="fas fa-lock"></i></button>
-    </nav>
-</header>
+<div class="header">
+    <div class="logo">MILLÁN <span>APP</span></div>
+    <div class="nav-icons">
+        <button onclick="showPage('home')" id="n-home" class="nav-btn active">🔍</button>
+        <button onclick="showPage('pos')" id="n-pos" class="nav-btn">🛒</button>
+        <button onclick="askPin()" id="n-admin" class="nav-btn">⚙️</button>
+    </div>
+</div>
 
-<div id="compita-btn" onclick="startVoice()"><i class="fas fa-microphone"></i></div>
+<div class="yuls-float" id="btn-yuls" onclick="startYuls()">
+    <div>YULS<br><span>EL JEFE</span></div>
+</div>
 
 <div id="home" class="page active">
-    <div id="hero-screen" class="hero-container">
-        <div class="big-logo">REFACCIONARIA <span>MILLÁN</span></div>
-        <p style="color:#666; margin-bottom: 20px;">Buscador Inteligente</p>
-        <input type="text" id="center-search" class="center-input" placeholder="🔍 Escribe pieza o código..." onkeyup="transferSearch(this)">
-        <button onclick="openGoogleDirect()" style="margin-top:20px; background:white; border:1px solid #4285F4; color:#4285F4; padding:10px 20px; border-radius:20px; font-weight:bold;">
-            <i class="fab fa-google"></i> BUSCAR EN GOOGLE
-        </button>
+    <div id="google-view" class="hero">
+        <div class="big-logo">MILLÁN<span>APP</span></div>
+        <p>¿Qué onda? Busca aquí o pregúntale al Yuls</p>
+        <input type="text" id="main-in" class="search-box" placeholder="Busca tu pieza..." onkeyup="doSearch(this.value)">
     </div>
-
-    <div id="results-screen" style="display:none;">
-        <div class="search-container" style="display:block;">
-            <input type="text" id="top-search" class="main-input" placeholder="🔍 Buscar..." onkeyup="filterList()">
+    <div id="results-view" style="display:none;">
+        <div style="position:sticky; top:70px; background:var(--bg); padding:10px 0; z-index:900;">
+            <input type="text" id="top-in" class="search-box" style="text-align:left; padding-left:20px;" onkeyup="doSearch(this.value)">
         </div>
-        <button onclick="resetHome()" style="background:none; border:none; color:#666; padding:10px;">⬅️ Volver al inicio</button>
-        <div id="list-area" style="padding-bottom: 50px;"></div>
+        <button onclick="backHome()" style="background:none; border:none; color:#666; font-weight:bold; padding:10px;">⬅ VOLVER</button>
+        <div id="list-results"></div>
     </div>
 </div>
 
 <div id="pos" class="page">
-    <h2>Caja</h2>
-    <button onclick="startCam()" style="width:100%; padding:15px; background:#333; color:white; border:none; border-radius:5px;">📸 CÁMARA</button>
-    <div id="reader" style="width:100%; display:none;"></div>
-    <div id="cart-display" style="background:white; min-height:100px; padding:10px; margin-top:20px; border:1px solid #ccc;">
-        <div style="text-align:center; color:#999;">Carrito Vacío</div>
-    </div>
-    <h1 style="text-align:right;">Total: $<span id="total-val">0</span></h1>
-    <button onclick="printTicket()" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:5px; font-size:1.2rem; font-weight:bold;">COBRAR</button>
+    <h2>CARRITO</h2>
+    <div id="cart-list"></div>
+    <div style="text-align:right; margin-top:20px;"><h1>Total: <span id="cart-total">$0</span></h1></div>
+    <button onclick="finishSale()" style="width:100%; padding:20px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold; font-size:1.2rem;">COBRAR</button>
 </div>
 
 <div id="admin" class="page">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2>ADMINISTRACIÓN</h2>
-        <button onclick="nav('home')" style="color:red; background:none; border:none; font-weight:bold;">SALIR</button>
+    <div style="display:flex; justify-content:space-between; align-items:center;"><h2>EXISTENCIAS</h2><button onclick="showPage('home')" style="color:red; background:none; border:none; font-weight:bold;">SALIR</button></div>
+    <div id="admin-body-list" style="margin-top:10px;">
+        <input type="text" placeholder="Filtrar..." onkeyup="drawAdmin(this.value)" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ccc;">
+        <div style="overflow-x:auto; margin-top:10px;">
+            <table style="width:100%; border-collapse:collapse; background:white;">
+                <tbody id="admin-tbody"></tbody>
+            </table>
+        </div>
     </div>
-
-    <div style="background:white; padding:10px; border-radius:5px; margin-bottom:15px;">
-        <label>Ganancia Global (%):</label>
-        <input type="number" id="margin-val" value="30" style="width:60px; padding:5px;">
-        <button onclick="applyMargin()" style="background:var(--info); color:white; border:none; padding:5px 10px; border-radius:5px;">APLICAR A TODO</button>
-    </div>
-
-    <h3>Inventario Detallado</h3>
-    <input type="text" id="admin-search" placeholder="🔍 Buscar en admin..." onkeyup="renderAdmin()" style="width:100%; padding:10px; box-sizing:border-box; margin-bottom:10px;">
-    
-    <div class="table-responsive">
-        <table id="admin-table">
-            <thead>
-                <tr>
-                    <th style="width:20%">Código</th>
-                    <th style="width:40%">Descripción</th>
-                    <th style="width:15%">Costo</th>
-                    <th style="width:15%">Venta</th>
-                    <th style="width:10%"></th>
-                </tr>
-            </thead>
-            <tbody id="admin-tbody"></tbody>
-        </table>
-    </div>
-
-    <br><br>
-    <button onclick="factoryReset()" style="background:red; color:white; padding:15px; width:100%; border:none; border-radius:5px;">⚠️ RECARGAR DATOS DE FÁBRICA</button>
+    <button onclick="resetAll()" style="width:100%; margin-top:40px; padding:10px; color:red; border:1px solid red; background:none; border-radius:10px;">⚠️ RESET SISTEMA</button>
 </div>
 
-<div id="login-overlay">
-    <h2>CLAVE</h2>
-    <input type="password" id="pin" style="font-size:2rem; width:150px; text-align:center;" placeholder="****">
-    <br><br>
-    <button onclick="checkPin()" style="padding:10px 30px; background:var(--primary); border:none; font-weight:bold;">ENTRAR</button>
-    <button onclick="closeLogin()" style="background:none; border:none; margin-top:20px; text-decoration:underline;">Cancelar</button>
+<div id="pin-modal" class="overlay">
+    <h3>CLAVE DEL PATRÓN</h3>
+    <input type="password" id="pin-in" class="pin-input" placeholder="****" maxlength="4">
+    <button onclick="verifyPin()" style="width:160px; padding:15px; background:var(--primary); border:none; border-radius:10px;">ENTRAR</button>
 </div>
 
 <script>
-    // --- DATOS REALES (CON PRECIO UNITARIO EN FOCOS) ---
-    const DB_RAW = [
-        {c:"E7691809", n:"Engrane Marcha Dodge (2)", cost:30}, {c:"E7691810", n:"Engrane Marcha Ford Bosch (1)", cost:30},
-        {c:"EM4", n:"Engrane Marcha Nissan (4)", cost:29}, {c:"EM5", n:"Engrane Marcha VW Golf (5)", cost:29},
-        {c:"1224", n:"Bendix Zen Ford", cost:114}, {c:"A618114ASS", n:"Armadura Nissan Hitachi", cost:264},
-        {c:"A011097E", n:"Armadura Nissan Chevy", cost:264}, {c:"PC10530941", n:"Porta Carbon GM Aveo", cost:75},
-        {c:"PC336246", n:"Porta Carbon Ford Nissan", cost:69}, {c:"PC336245", n:"Porta Carbon Nissan Chevy", cost:69},
-        {c:"B55", n:"Modulo Encendido Tsuru 16V", cost:543}, {c:"BOM-TSURU", n:"Bomba Gasolina Tsuru III", cost:330},
-        {c:"RIH738TP", n:"Regulador Nissan Hitachi", cost:317}, {c:"F9004LED", n:"Foco 9004 LED 4 Caras", cost:275},
-        // FOCOS UNITARIOS (Caja / 10)
-        {c:"67HELLA", n:"Foco 67 Hella (Suelto)", cost:3.30}, 
-        {c:"158HELLA", n:"Foco 158 Pellizco (Suelto)", cost:2.40},
-        {c:"1034HELLA", n:"Foco 1034 (Suelto)", cost:3.50},
-        {c:"1176HELLA", n:"Foco 1176 (Suelto)", cost:3.70},
-        {c:"1141HELLA", n:"Foco 1141 (Suelto)", cost:3.50},
-        {c:"HX10", n:"Foco 3157 Hella (Suelto)", cost:11.60},
-        {c:"HXC", n:"Foco 7443 Hella (Suelto)", cost:15.70},
-        // OTROS
-        {c:"BM70582", n:"Bulbo Motovent VW Caribe", cost:98},
-        {c:"CP1830M", n:"Cable Plastico 18 30mts", cost:88}, {c:"952011", n:"Bocina Claxon VW Hella", cost:121},
-        {c:"PC698309", n:"Porta Carbon Mitsubishi Grande", cost:75}, {c:"PC698308", n:"Porta Carbon Mitsubishi Chico", cost:58},
-        {c:"PC36441", n:"Porta Carbon Platina Valeo", cost:69}, {c:"PC336716", n:"Porta Carbon Bosch Automotive", cost:72},
-        {c:"PC336200", n:"Porta Carbon VW Jetta Eco", cost:69}, {c:"PC698104", n:"Porta Carbon Nissan Hueco", cost:81},
-        {c:"SLDSS1750", n:"Automatico Ford Bosch", cost:220}, {c:"1219", n:"Automatico Nissan Hitachi", cost:215}
+    const MASTER_ITEMS = [
+        {c:"B55", n:"Modulo Encendido Nissan Tsuru 16V", cost:543},
+        {c:"E7691809", n:"Engrane Marcha Dodge (2)", cost:30},
+        {c:"E7691810", n:"Engrane Marcha Ford Bosch (1)", cost:30},
+        {c:"EM4", n:"Engrane Marcha Nissan (4) y Chevy", cost:29},
+        {c:"1224", n:"Bendix Zen Ford Motorcraft 10D", cost:114},
+        {c:"A618114ASS", n:"Armadura Nissan Hitachi PMGR 114", cost:264},
+        {c:"PC336246", n:"Porta Carbon Ford Nissan 336 246", cost:69},
+        {c:"BOM-TSURU", n:"Bomba Gasolina Bosch Tsuru III", cost:330},
+        {c:"RIH738TP", n:"Regulador Nissan Hitachi RIH 738", cost:317},
+        {c:"67HELLA", n:"Foco 67 Hella (Suelto)", cost:3.30},
+        {c:"158HELLA", n:"Foco 158 Pellizco (Suelto)", cost:2.40}
     ];
 
-    let INVENTARIO = [];
-    let CART = [];
-    let MARGEN = 30;
-    let scanner = null;
+    let db = []; let cart = [];
 
-    // --- ARRANQUE SEGURO ---
-    window.onload = function() {
-        try {
-            let stored = localStorage.getItem('millan_v20_db');
-            if(stored) {
-                INVENTARIO = JSON.parse(stored);
-            } else {
-                INVENTARIO = JSON.parse(JSON.stringify(DB_RAW));
-                INVENTARIO.forEach(p => p.price = Math.ceil(p.cost * 1.30));
-                save();
-            }
-            document.getElementById('status').style.background = "#00c851";
-        } catch (e) {
-            alert("Error al iniciar.");
-            factoryReset();
-        }
+    window.onload = () => {
+        let saved = localStorage.getItem('millan_v27_db');
+        if(saved) db = JSON.parse(saved);
+        else { db = JSON.parse(JSON.stringify(MASTER_ITEMS)); db.forEach(p => p.price = Math.ceil(p.cost * 1.3)); localStorage.setItem('millan_v27_db', JSON.stringify(db)); }
     };
 
-    function save() { localStorage.setItem('millan_v20_db', JSON.stringify(INVENTARIO)); }
-
-    // --- INTERFAZ ---
-    function transferSearch(input) {
-        let val = input.value;
-        if(val.length > 0) {
-            document.getElementById('hero-screen').style.display = 'none';
-            document.getElementById('results-screen').style.display = 'block';
-            let topInput = document.getElementById('top-search');
-            topInput.value = val;
-            topInput.focus();
-            filterList();
-        }
+    function showPage(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); if(id === 'pos') drawCart(); if(id === 'admin') drawAdmin(""); }
+    function askPin() { document.getElementById('pin-modal').style.display = 'flex'; }
+    function verifyPin() { if(document.getElementById('pin-in').value === "1234") { document.getElementById('pin-modal').style.display = 'none'; showPage('admin'); } else alert("Error"); }
+    
+    function doSearch(q) {
+        if(!q) { backHome(); return; }
+        q = q.toUpperCase();
+        document.getElementById('google-view').style.display = 'none'; document.getElementById('results-view').style.display = 'block';
+        let words = q.split(" ");
+        let res = db.filter(p => words.every(w => p.n.toUpperCase().includes(w) || p.c.toUpperCase().includes(w)));
+        const list = document.getElementById('list-results'); list.innerHTML = "";
+        if(res.length === 0) list.innerHTML = `<div style="text-align:center; padding:30px;">Híjole, ni el Yuls la encuentra.</div>`;
+        else res.forEach(p => { list.innerHTML += `<div class="card"><div><b>${p.n}</b><br><small>${p.c}</small></div><div style="text-align:right;"><div class="price">$${p.price}</div><button class="btn-add" onclick="toCart('${p.c}')">AGREGAR</button></div></div>`; });
     }
 
-    function resetHome() {
-        document.getElementById('results-screen').style.display = 'none';
-        document.getElementById('hero-screen').style.display = 'flex';
-        document.getElementById('center-search').value = "";
-        document.getElementById('top-search').value = "";
-    }
+    function backHome() { document.getElementById('results-view').style.display = 'none'; document.getElementById('google-view').style.display = 'flex'; document.getElementById('main-in').value = ""; }
+    function toCart(c) { cart.push(db.find(x => x.c === c)); alert("Anotado patrón."); }
+    function drawCart() { let t = 0; const d = document.getElementById('cart-list'); d.innerHTML = ""; cart.forEach((p, i) => { t += p.price; d.innerHTML += `<div style="background:white; padding:15px; margin-bottom:5px; border-radius:10px; display:flex; justify-content:space-between;"><span>${p.n}</span><span>$${p.price} <b style="color:red;" onclick="delCart(${i})">X</b></span></div>`; }); document.getElementById('cart-total').innerText = "$" + t; }
+    function delCart(i) { cart.splice(i, 1); drawCart(); }
+    function finishSale() { if(cart.length > 0) { window.print(); cart = []; drawCart(); } }
+    function drawAdmin(f) { f = f.toUpperCase(); const b = document.getElementById('admin-tbody'); b.innerHTML = ""; db.forEach(p => { if(p.n.toUpperCase().includes(f) || p.c.includes(f)) b.innerHTML += `<tr><td style="padding:10px; border-bottom:1px solid #eee;"><b>${p.n}</b><br><small>${p.c}</small></td><td style="text-align:right; padding:10px; border-bottom:1px solid #eee;"><span style="color:gray">$${p.cost}</span><br><b style="color:green">$${p.price}</b></td></tr>`; }); }
+    function resetAll() { localStorage.clear(); location.reload(); }
 
-    function filterList() {
-        let q = document.getElementById('top-search').value.toUpperCase();
-        let div = document.getElementById('list-area');
-        div.innerHTML = "";
+    // --- EL YULS: ASISTENTE CABRÓN ---
+    function startYuls() {
+        if(!('webkitSpeechRecognition' in window)) return alert("Usa Chrome para hablar con el Yuls.");
+        const btn = document.getElementById('btn-yuls'); btn.classList.add('active');
+        const rec = new webkitSpeechRecognition(); rec.lang = "es-MX"; rec.continuous = false;
+        
+        // El saludo inicial del Yuls
+        const saludos = ["¿Qué transa, carnal? ¿Qué pieza buscamos?", "Habla, Millán, ¿qué hace falta?", "¿Qué onda? ¿Qué andas ocupando ahora?"];
+        speak(saludos[Math.floor(Math.random() * saludos.length)]);
 
-        let list = INVENTARIO.filter(p => p.n.toUpperCase().includes(q) || p.c.toUpperCase().includes(q));
+        rec.onresult = (e) => {
+            let t = e.results[0][0].transcript.toLowerCase();
+            let search = t.replace(/yuls|jefe|cabrón|busca|oye|tienes|hay|una|un|la|el|los|las|de|válvulas/g, "").trim();
+            
+            if(search === "") return;
+            
+            showPage('home');
+            doSearch(search);
 
-        if(list.length === 0) {
-            div.innerHTML = `<div style='text-align:center; padding:30px;'><p>No lo topo.</p><button onclick="openGoogle()" style="padding:10px; border:1px solid #4285F4; background:white; color:#4285F4; border-radius:20px;">Buscar en Google</button></div>`;
-            return;
-        }
-
-        list.forEach(p => {
-            div.innerHTML += `
-            <div class="card">
-                <div class="card-info"><div class="card-title">${p.n}</div><div class="card-code">${p.c}</div></div>
-                <div><div class="card-price">$${p.price}</div><button class="btn-add" onclick="addCart('${p.c}')">AGREGAR</button></div>
-            </div>`;
-        });
-    }
-
-    function openGoogleDirect() { let t = document.getElementById('center-search').value || "Refaccion"; window.open("https://www.google.com/search?tbm=isch&q="+t, "_blank"); }
-    function openGoogle() { let t = document.getElementById('top-search').value; window.open("https://www.google.com/search?tbm=isch&q="+t, "_blank"); }
-
-    // --- CAJA ---
-    function addCart(c) {
-        let p = INVENTARIO.find(x => x.c === c);
-        if(p) { CART.push(p); alert("Agregado: " + p.n); }
-    }
-    function renderCart() {
-        let div = document.getElementById('cart-display');
-        let tot = 0; div.innerHTML = "";
-        if(CART.length === 0) div.innerHTML = "<div style='text-align:center; color:#999;'>Carrito Vacío</div>";
-        else {
-            CART.forEach((p, i) => {
-                tot += p.price;
-                div.innerHTML += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding:5px;"><span>${p.n}</span><span>$${p.price} <b style="color:red; margin-left:10px;" onclick="delCart(${i})">X</b></span></div>`;
+            let keywords = search.split(" ");
+            let found = db.find(item => {
+                let name = item.n.toLowerCase();
+                return keywords.every(key => name.includes(key));
             });
-        }
-        document.getElementById('total-val').innerText = tot;
-    }
-    function delCart(i) { CART.splice(i,1); renderCart(); }
-    function printTicket() { if(CART.length > 0) { window.print(); if(confirm("¿Listo?")) { CART=[]; renderCart(); } } else alert("Nada"); }
-
-    // --- ADMIN (TABLA CORREGIDA) ---
-    function openAdmin() { document.getElementById('login-overlay').style.display = 'flex'; document.getElementById('pin').value = ""; }
-    function checkPin() { if(document.getElementById('pin').value === "1234") { closeLogin(); nav('admin'); renderAdminTable(); } else alert("Error"); }
-    function closeLogin() { document.getElementById('login-overlay').style.display = 'none'; }
-
-    function renderAdminTable() {
-        let b = document.getElementById('admin-tbody');
-        let f = document.getElementById('admin-search').value.toUpperCase();
-        b.innerHTML = "";
-        INVENTARIO.forEach(p => {
-            if(p.n.toUpperCase().includes(f) || p.c.includes(f)) {
-                // AQUÍ ESTÁN LAS COLUMNAS DESGLOSADAS
-                b.innerHTML += `<tr>
-                    <td><small>${p.c}</small></td>
-                    <td>${p.n}</td>
-                    <td class="cost-col">$${p.cost}</td>
-                    <td class="price-col">$${p.price}</td>
-                    <td><button onclick="delProd('${p.c}')" style="color:red; background:none; border:none; font-weight:bold;">X</button></td>
-                </tr>`;
+            
+            if(found) {
+                speak("¡Esa sí la tengo! Es el " + found.n + ". Te sale en " + found.price + " varos. ¿Te la anoto?");
+            } else {
+                speak("N'ombre carnal, esa no la topo en la lista. ¿La buscamos en el Google?");
             }
-        });
+        };
+        rec.onend = () => btn.classList.remove('active');
+        rec.start();
     }
-    function renderAdmin() { renderAdminTable(); } 
-
-    function delProd(c) { if(confirm("Borrar?")) { INVENTARIO = INVENTARIO.filter(p => p.
+    function speak(m) { window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(m); u.lang = "es-MX"; u.rate = 1.0; window.speechSynthesis.speak(u); }
+</script>
+</body>
+</html>
