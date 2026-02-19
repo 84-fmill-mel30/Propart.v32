@@ -3,132 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ELECTRIPARTES MILLÁN - SISTEMA TOTAL</title>
+    <title>ELECTRIPARTES MILLÁN V38 - CERTIFICADA</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #ffd700; --dark: #111; --bg: #f4f4f4; --success: #00c851; --google: #4285F4; }
+        :root { --primary: #ffd700; --dark: #111; --bg: #f4f4f4; --success: #00c851; --wa: #25d366; }
         body { font-family: sans-serif; margin: 0; padding: 0; background: var(--bg); padding-bottom: 90px; }
-        .header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .nav-btn { background: none; border: none; color: #888; font-size: 1.6rem; margin-left: 20px; cursor: pointer; }
-        .nav-btn.active { color: var(--primary); }
+        
+        /* HEADER */
+        .header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .logo { font-weight: 900; font-size: 1.2rem; text-transform: uppercase; }
+        .logo span { color: var(--primary); }
+        .nav-btn { background: none; border: none; color: #888; font-size: 1.5rem; margin-left: 20px; cursor: pointer; outline: none; }
+        .nav-btn.active { color: var(--primary); transform: scale(1.1); }
+
         .page { display: none; padding: 15px; max-width: 900px; margin: 0 auto; }
         .page.active { display: block; }
-        .servicios-box { background: #1a1a1a; color: white; padding: 20px; border-radius: 15px; border: 2px solid var(--primary); margin-bottom: 20px; text-align: center; }
-        .search-box { width: 100%; padding: 18px; border-radius: 35px; border: 1px solid #ccc; font-size: 1.2rem; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; box-sizing: border-box; }
+
+        /* PUBLICIDAD / SERVICIOS */
+        .banner { background: #1a1a1a; color: white; padding: 20px; border-radius: 15px; border: 2px solid var(--primary); margin-bottom: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .banner h2 { color: var(--primary); margin: 0 0 10px; font-size: 1.5rem; text-transform: uppercase; }
+        .banner p { font-size: 0.9rem; margin: 4px 0; color: #ddd; }
+        .contact-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; background: #2a2a2a; padding: 12px; border-radius: 10px; }
+        .contact-item { display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; font-size: 0.9rem; color: #fff; }
+        .fa-whatsapp { color: var(--wa); font-size: 1.2rem; }
+
+        /* BUSCADOR */
+        .search-box { width: 100%; padding: 18px; border-radius: 35px; border: 2px solid #ccc; font-size: 1.2rem; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; box-sizing: border-box; }
+        .btn-google { display: inline-block; margin-top: 10px; color: #4285f4; font-weight: bold; text-decoration: none; cursor: pointer; font-size: 0.9rem; }
+
+        /* TARJETAS */
         .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .stock-pill { background: #eee; padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; font-weight: bold; color: #555; }
         .price { font-size: 1.5rem; font-weight: 900; color: var(--success); }
-        .yuls-float { position: fixed; bottom: 20px; right: 20px; width: 85px; height: 85px; background: #000; border: 4px solid var(--primary); border-radius: 50%; color: var(--primary); font-size: 1.4rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 25px rgba(0,0,0,0.6); z-index: 2000; cursor: pointer; text-align: center; line-height: 1; }
-        .yuls-float.active { background: #ff4444; border-color: white; animation: pulse 1s infinite; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
-        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; font-size: 0.85rem; }
-        th { background: #333; color: white; }
-        #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 10px; display: none; background: black; }
-        @keyframes pulse { 0% {transform: scale(1.1);} 100% {transform: scale(1);} }
+        
+        /* ADMIN */
+        .admin-table-wrap { overflow-x: auto; background: white; border-radius: 10px; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; font-size: 0.85rem; }
+        th { background: #222; color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+
+        /* YULS FLOAT */
+        .yuls-btn { position: fixed; bottom: 20px; right: 20px; width: 85px; height: 85px; background: #000; border: 4px solid var(--primary); border-radius: 50%; color: var(--primary); font-size: 1.4rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 25px rgba(0,0,0,0.6); z-index: 2000; cursor: pointer; text-align: center; line-height: 1; }
+        .yuls-btn.active { background: #ff4444; border-color: white; animation: pulse 1s infinite; }
+        
+        #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; display: none; }
+
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.15);} 100% {transform: scale(1);} }
     </style>
 </head>
 <body>
 
 <header class="header">
-    <div style="font-weight:900;">MILLÁN <span style="color:var(--primary)">SISTEMA</span></div>
+    <div class="logo">MILLÁN <span>DIAGNÓSTICO</span></div>
     <nav>
         <button onclick="showPage('home')" id="n-home" class="nav-btn active"><i class="fas fa-home"></i></button>
         <button onclick="showPage('pos')" id="n-pos" class="nav-btn"><i class="fas fa-shopping-cart"></i></button>
-        <button onclick="askPin()" id="n-admin" class="nav-btn"><i class="fas fa-cog"></i></button>
+        <button onclick="askPin()" id="n-admin" class="nav-btn"><i class="fas fa-user-gear"></i></button>
     </nav>
 </header>
 
-<div class="yuls-float" id="btn-yuls" onclick="startYuls()">
+<div class="yuls-btn" id="yuls-trigger" onclick="startYuls()">
     <div>YULS<br><span style="font-size:0.6rem;color:white">EL JEFE</span></div>
 </div>
 
 <div id="home" class="page active">
-    <div class="servicios-box">
-        <h2 style="color:var(--primary); margin:0;">ELECTRIPARTES MILLÁN</h2>
-        <p style="margin:5px 0;"><b>Técnico Especialista: Módulos • Escáner • Osciloscopio</b></p>
-        <div style="background:#333; padding:8px; border-radius:8px; font-size:0.85rem; margin-top:10px;">
-            777 683 8196 / 221 956 7392<br>electripartmillan@gmail.com
+    <div class="banner">
+        <h2>ELECTRIPARTES MILLÁN</h2>
+        <p><b>Técnico Automotriz Especializado</b></p>
+        <p>• Reparación de Módulos • Diagnóstico con Escáner y Osciloscopio •</p>
+        <div class="contact-grid">
+            <div class="contact-item"><i class="fab fa-whatsapp"></i> 777 683 8196</div>
+            <div class="contact-item"><i class="fab fa-whatsapp"></i> 221 956 7392</div>
+            <div class="contact-item"><i class="far fa-envelope"></i> electripartmillan@gmail.com</div>
         </div>
     </div>
+    
     <input type="text" id="main-in" class="search-box" placeholder="Busca pieza o habla con el Yuls..." onkeyup="doSearch(this.value)">
-    <button onclick="goGoogle()" style="width:100%; margin-top:10px; border:none; background:none; color:var(--google); font-weight:bold; cursor:pointer;">🔍 Buscar en Google Imágenes</button>
+    <div style="text-align:center;"><span class="btn-google" onclick="goGoogle()">🔍 Buscar fotos en Google</span></div>
+    
     <div id="results-view" style="display:none; margin-top:20px;"><div id="list-results"></div></div>
 </div>
 
 <div id="pos" class="page">
-    <h2>CARRITO DE COBRO</h2>
+    <h2>LISTA DE COBRO</h2>
     <button onclick="toggleCam()" style="width:100%; padding:15px; background:#333; color:white; border:none; border-radius:10px; margin-bottom:15px; font-weight:bold;"><i class="fas fa-camera"></i> ESCANEAR CÓDIGO</button>
     <div id="reader"></div>
-    <div id="cart-list" style="background:white; border-radius:10px; padding:10px;"></div>
-    <div style="text-align:right; margin-top:20px;"><h1>Total: <span id="cart-total">$0</span></h1></div>
-    <button onclick="finishSale()" style="width:100%; padding:20px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold; font-size:1.2rem;">IMPRIMIR TICKET</button>
+    <div id="cart-list"></div>
+    <div style="text-align:right; margin-top:20px;">
+        <h1 id="cart-total">Total: $0</h1>
+        <button onclick="finishSale()" style="width:100%; padding:20px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold; font-size:1.2rem;">IMPRIMIR TICKET</button>
+    </div>
 </div>
 
 <div id="admin" class="page">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2>EXISTENCIAS</h2>
-        <div id="inv-money" style="background:black; color:var(--primary); padding:8px; border-radius:5px; font-weight:bold; font-size:0.8rem;"></div>
+        <h2>INVENTARIO REAL</h2>
+        <div id="total-inv-val" style="background:black; color:var(--primary); padding:10px; border-radius:8px; font-weight:bold;"></div>
     </div>
-    <input type="text" placeholder="Filtrar..." onkeyup="drawAdmin(this.value)" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc;">
-    <div style="overflow-x:auto;">
+    <input type="text" placeholder="Filtrar por nombre o código..." onkeyup="drawAdmin(this.value)" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ccc; margin:10px 0;">
+    <div class="admin-table-wrap">
         <table>
             <thead><tr><th>Pieza</th><th>Stock</th><th>Costo</th><th>Venta</th></tr></thead>
             <tbody id="admin-tbody"></tbody>
         </table>
     </div>
-    <button onclick="resetAll()" style="width:100%; margin-top:30px; padding:10px; color:red; border:1px solid red; background:none; border-radius:8px;">⚠️ RECARGAR LISTA DE HOJAS</button>
+    <button onclick="resetSystem()" style="margin-top:40px; color:red; background:none; border:none; font-weight:bold; cursor:pointer;">⚠️ RECARGAR LISTA DE LAS 10 HOJAS</button>
 </div>
 
 <script>
-    const MASTER_LIST = [
-        {c:"B55", n:"Modulo Tsuru 16V", s:5, cost:543},
-        {c:"PC336246", n:"Porta Carbon Ford Nissan 336246", s:10, cost:69},
-        {c:"PC10530941", n:"Porta Carbon GM Aveo Usatech", s:3, cost:75},
-        {c:"1224", n:"Bendix Zen Ford 10D", s:4, cost:114},
-        {c:"67HELLA", n:"Foco 67 Hella (Suelto)", s:50, cost:3.30},
-        {c:"FC15A", n:"Fusible Clavija 15 Amp", s:100, cost:0.85},
+    // --- INVENTARIO COMPLETO EMPATADO (10 HOJAS) ---
+    const RAW_DB = [
+        // PORTACARBONES
+        {c:"PC10530941", n:"Porta Carbón GM Aveo Usatech", s:2, cost:75},
+        {c:"PC698309", n:"Porta Carbón Mitsubishi Grande Asser", s:3, cost:75},
+        {c:"PC698308", n:"Porta Carbón Mitsubishi Chico Automotive", s:3, cost:58},
+        {c:"PC36441", n:"Porta Carbón Platina/Chevy Valeo", s:3, cost:69},
+        {c:"PC336246", n:"Porta Carbón Ford Nissan 336246 USAT", s:5, cost:69},
+        {c:"PC336245", n:"Porta Carbón Nissan Chevy Bosch Tipo", s:5, cost:69},
+        {c:"PC698330", n:"Porta Carbón Mitsubishi Urvan 2.5 Value", s:5, cost:81},
+        {c:"PC698318", n:"Porta Carbón Nissan Urvan 2.4 Total Parts", s:5, cost:75},
+        {c:"PC69114", n:"Porta Carbón Nissan 69114 Hitachi", s:5, cost:64},
+        
+        // ENGRANES Y BENDIX
+        {c:"E7691809", n:"Engrane Marcha Dodge (2) E7691809", s:3, cost:30},
+        {c:"E7691810", n:"Engrane Marcha Ford Bosch (1) E7691810", s:3, cost:30},
+        {c:"7691820", n:"Engrane Marcha Nissan (4) 7691820", s:5, cost:29},
+        {c:"7691821", n:"Engrane Marcha VW Golf (5) 7691821", s:5, cost:29},
+        {c:"1224", n:"Bendix Zen Ford 10 Dientes", s:1, cost:114},
+
+        // MÓDULOS Y ARMADURAS
+        {c:"B55", n:"Módulo Encendido Nissan Tsuru 16V B55", s:1, cost:543},
         {c:"A618114ASS", n:"Armadura Nissan Hitachi PMGR", s:3, cost:264},
-        {c:"BM70582", n:"Bulbo Motovent VW Caribe", s:3, cost:98},
-        {c:"B6303NTN", n:"Balero 6303 NTN", s:5, cost:65}
+        {c:"A011097E", n:"Armadura Nissan Chevy Usatech", s:2, cost:264},
+        
+        // FUSIBLES Y VARIOS
+        {c:"FC15A", n:"Fusible Clavija 15 Amp", s:100, cost:0.85},
+        {c:"CP18", n:"Cable Plástico Calibre 18 (30mts)", s:2, cost:88},
+        {c:"CP16", n:"Cable Plástico Calibre 16 (30mts)", s:2, cost:88},
+        {c:"BM70582", n:"Bulbo Motoventilador VW Caribe", s:3, cost:98},
+        {c:"B6305", n:"Balero 6305 NTN", s:3, cost:109},
+        {c:"B6304", n:"Balero 6304 NTN", s:3, cost:83}
     ];
 
     let db = []; let cart = []; let scanner = null;
 
-    window.onload = () => {
-        let saved = localStorage.getItem('millan_db_final');
+    function init() {
+        let saved = localStorage.getItem('millan_v38_db');
         if(saved) db = JSON.parse(saved);
-        else { db = JSON.parse(JSON.stringify(MASTER_LIST)); db.forEach(p => p.price = Math.ceil(p.cost * 1.3)); save(); }
-    };
+        else { db = RAW_DB.map(p => ({...p, p: Math.ceil(p.cost * 1.30)})); save(); }
+    }
+    init();
 
-    function save() { localStorage.setItem('millan_db_final', JSON.stringify(db)); }
-    function showPage(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById('n-'+id).classList.add('active'); if(id==='pos') drawCart(); if(id==='admin') drawAdmin(""); }
-    function doSearch(q) { q = q.toUpperCase(); const dv = document.getElementById('results-view'); const list = document.getElementById('list-results'); if(!q) { dv.style.display='none'; return; } dv.style.display='block'; let res = db.filter(p => p.n.toUpperCase().includes(q) || p.c.includes(q)); list.innerHTML = res.map(p => `<div class="card"><div><b>${p.n}</b><br><small>Stock: ${p.s}</small></div><div style="text-align:right;"><div class="price">$${p.price}</div><button onclick="toCart('${p.c}')" style="background:black;color:white;border:none;padding:8px;border-radius:5px;">Añadir</button></div></div>`).join(''); }
-    function toCart(c) { let p = db.find(x => x.c === c); if(p && p.s > 0) { cart.push(p); p.s--; save(); drawCart(); alert("¡Anotado!"); } else alert("Sin stock"); }
-    function drawCart() { let t=0; const d=document.getElementById('cart-list'); d.innerHTML=""; cart.forEach((p,i)=>{ t+=p.price; d.innerHTML+=`<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${p.n}</span><span>$${p.price} <b onclick="cart.splice(${i},1);drawCart()" style="color:red;cursor:pointer">X</b></span></div>`; }); document.getElementById('cart-total').innerText="$"+t; }
+    function save() { localStorage.setItem('millan_v38_db', JSON.stringify(db)); }
+
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('n-'+id).classList.add('active');
+        if(id==='pos') drawCart();
+        if(id==='admin') drawAdmin("");
+    }
+
+    function doSearch(q) {
+        if(!q) { document.getElementById('results-view').style.display='none'; return; }
+        q = q.toUpperCase();
+        document.getElementById('results-view').style.display = 'block';
+        let res = db.filter(p => p.n.toUpperCase().includes(q) || p.c.toUpperCase().includes(q));
+        const list = document.getElementById('list-results'); list.innerHTML = "";
+        res.forEach(p => {
+            list.innerHTML += `<div class="card"><div><b>${p.n}</b><br><span class="stock-pill">Stock: ${p.s}</span></div><div style="text-align:right;"><div class="price">$${p.p}</div><button onclick="toCart('${p.c}')" style="background:#000;color:#fff;border:none;padding:8px 12px;border-radius:5px;cursor:pointer;">Cobrar</button></div></div>`;
+        });
+    }
+
+    function toCart(c) {
+        let item = db.find(x => x.c === c);
+        if(item && item.s > 0) {
+            cart.push(item); item.s--; save(); drawCart(); alert("¡Anotado carnal!");
+        } else alert("¡N'ombre carnal, ya no hay stock!");
+    }
+
+    function drawCart() {
+        let t=0; const d=document.getElementById('cart-list'); d.innerHTML="";
+        cart.forEach((p,i)=>{ t+=p.p; d.innerHTML+=`<div style="display:flex;justify-content:space-between;background:white;padding:10px;border-bottom:1px solid #eee;"><span>${p.n}</span><span>$${p.p} <b onclick="cart.splice(${i},1);drawCart()" style="color:red;cursor:pointer">X</b></span></div>`; });
+        document.getElementById('cart-total').innerText="Total: $"+t;
+    }
+
     function finishSale() { if(cart.length>0){ window.print(); cart=[]; drawCart(); } }
-    function goGoogle() { window.open("https://www.google.com/search?tbm=isch&q=" + (document.getElementById('main-in').value || "refaccion"), "_blank"); }
-    function toggleCam() { const r = document.getElementById('reader'); if(r.style.display==='block'){ r.style.display='none'; scanner.clear(); } else { r.style.display='block'; scanner = new Html5QrcodeScanner("reader", {fps:10, qrbox:250}); scanner.render(txt => toCart(txt)); } }
-    function askPin() { if(prompt("PIN:")==="1234") showPage('admin'); }
-    function drawAdmin(f) { f=f.toUpperCase(); const b=document.getElementById('admin-tbody'); b.innerHTML=""; let total=0; db.forEach(p=>{ if(p.n.toUpperCase().includes(f)) { total+=(p.cost*p.s); b.innerHTML+=`<tr><td><b>${p.n}</b></td><td>${p.s}</td><td>$${p.cost}</td><td style="color:green;font-weight:bold;">$${p.price}</td></tr>`; } }); document.getElementById('inv-money').innerText="INVERSIÓN: $"+total.toLocaleString(); }
-    function resetAll() { if(confirm("¿Recargar todo?")) { localStorage.clear(); location.reload(); } }
 
+    function goGoogle() { window.open("https://www.google.com/search?tbm=isch&q="+(document.getElementById('main-in').value || "refaccion"), "_blank"); }
+
+    function toggleCam() {
+        const r = document.getElementById('reader');
+        if(r.style.display==='block'){ r.style.display='none'; scanner.clear(); }
+        else { r.style.display='block'; scanner = new Html5QrcodeScanner("reader", {fps:10, qrbox:250}); scanner.render(txt => toCart(txt)); }
+    }
+
+    function askPin() { if(prompt("PIN:")==="1234") showPage('admin'); }
+
+    function drawAdmin(f) {
+        f = f.toUpperCase(); const b = document.getElementById('admin-tbody'); b.innerHTML = "";
+        let totalVal = 0;
+        db.forEach(p => {
+            if(p.n.toUpperCase().includes(f) || p.c.toUpperCase().includes(f)) {
+                totalVal += (p.cost * p.s);
+                b.innerHTML += `<tr><td><b>${p.n}</b><br><small>${p.c}</small></td><td>${p.s}</td><td>$${p.cost}</td><td style="color:green;font-weight:bold;">$${p.p}</td></tr>`;
+            }
+        });
+        document.getElementById('total-inv-val').innerText = "INVERSIÓN: $" + totalVal.toLocaleString();
+    }
+
+    function resetSystem() { if(confirm("¿Recargar las 10 hojas?")) { localStorage.clear(); location.reload(); } }
+
+    // --- YULS INTERACTIVO ---
     function startYuls() {
-        if(!window.webkitSpeechRecognition) return alert("Usa Chrome");
+        if(!window.webkitSpeechRecognition) return alert("Usa Chrome carnal");
         const rec = new webkitSpeechRecognition(); rec.lang = "es-MX";
-        document.getElementById('btn-yuls').classList.add('active');
-        speak("¿Qué onda Millán? ¿Qué buscamos?");
+        document.getElementById('yuls-trigger').classList.add('active');
+        speak("¿Qué onda Millán? ¿Qué pieza buscamos carnal?");
+
         rec.onresult = (e) => {
-            let t = e.results[0][0].transcript.toLowerCase();
-            let q = t.replace(/yuls|busca|tienes|hay|el|la|un|una|de|válvulas/g, "").trim();
-            let p = db.find(x => x.n.toLowerCase().includes(q));
-            if(p) {
-                speak("¡Simón carnal! Del " + p.n + " tengo " + p.s + " piezas. Cuesta " + p.price + " varos. ¿Lo agrego al carrito?", () => {
+            let text = e.results[0][0].transcript.toLowerCase();
+            let q = text.replace(/yuls|busca|tienes|hay|el|la|un|una|de|válvulas/g, "").trim();
+            let found = db.find(p => q.split(" ").every(w => p.n.toLowerCase().includes(w)));
+            
+            if(found) {
+                speak("¡Esa sí la tengo carnal! Es el " + found.n + " en " + found.p + " varos. ¿Quieres que lo agregue carnal?", () => {
                     setTimeout(() => {
                         const confirmRec = new webkitSpeechRecognition(); confirmRec.lang = "es-MX";
                         confirmRec.onresult = (e2) => {
-                            let res = e2.results[0][0].transcript.toLowerCase();
-                            if(res.includes("si") || res.includes("agrega") || res.includes("simon") || res.includes("manda")) {
-                                toCart(p.c); speak("¡Arre carnal! Lo imprimo de volada.");
+                            if(e2.results[0][0].transcript.toLowerCase().includes("si") || e2.results[0][0].transcript.toLowerCase().includes("agrega")) {
+                                toCart(found.c); speak("¡Arre carnal! Lo imprimo de volada.");
                                 setTimeout(() => finishSale(), 1500);
                             }
                         };
@@ -136,12 +242,18 @@
                     }, 500);
                 });
                 showPage('home'); doSearch(q);
-            } else speak("Híjole Millán, esa no la topo.");
+            } else speak("Híjole Millán, esa no la topo carnal.");
         };
-        rec.onend = () => document.getElementById('btn-yuls').classList.remove('active');
+        rec.onend = () => document.getElementById('yuls-trigger').classList.remove('active');
         rec.start();
     }
-    function speak(m, cb) { window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(m); u.lang = "es-MX"; if(cb) u.onend = cb; window.speechSynthesis.speak(u); }
+
+    function speak(m, cb) {
+        window.speechSynthesis.cancel();
+        let u = new SpeechSynthesisUtterance(m); u.lang = "es-MX"; u.rate = 1.1;
+        if(cb) u.onend = cb;
+        window.speechSynthesis.speak(u);
+    }
 </script>
 </body>
 </html>
