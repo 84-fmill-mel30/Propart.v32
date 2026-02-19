@@ -3,51 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MILLÁN APP V23</title>
+    <title>MILLÁN APP V24</title>
     <style>
         :root { --primary: #ffd700; --dark: #111; --bg: #f4f4f4; --success: #00c851; --info: #33b5e5; }
         body { font-family: sans-serif; margin: 0; padding: 0; background: var(--bg); padding-bottom: 80px; overflow-x: hidden; }
         
-        /* HEADER NAVEGACIÓN */
         .header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .logo { font-weight: 900; font-size: 1.2rem; letter-spacing: 1px; }
         .logo span { color: var(--primary); }
         .nav-btn { background: none; border: none; color: #888; font-size: 1.5rem; margin-left: 20px; cursor: pointer; padding: 5px; outline: none; }
         .nav-btn.active { color: var(--primary); transform: scale(1.1); }
 
-        /* PÁGINAS */
         .page { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
         .page.active { display: block; }
 
-        /* INICIO (GOOGLE STYLE) */
-        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; transition: 0.3s; }
-        .big-logo { font-size: 2.8rem; font-weight: 900; margin-bottom: 20px; line-height: 1; color: var(--dark); }
+        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; }
+        .big-logo { font-size: 2.8rem; font-weight: 900; margin-bottom: 20px; color: var(--dark); }
         .big-logo span { color: var(--primary); }
         .search-box { width: 90%; max-width: 500px; padding: 18px; border-radius: 35px; border: 1px solid #ccc; font-size: 1.2rem; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .btn-google { background: white; border: 1px solid #4285f4; color: #4285f4; padding: 12px 25px; border-radius: 25px; margin-top: 20px; font-weight: bold; cursor: pointer; }
 
-        /* LISTA DE RESULTADOS */
         .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
-        .card-info { flex-grow: 1; }
         .card-title { font-weight: bold; font-size: 1rem; color: #333; }
         .card-code { font-size: 0.8rem; color: #888; background: #eee; padding: 2px 5px; border-radius: 4px; }
         .price { font-size: 1.5rem; font-weight: 900; color: var(--success); }
         .btn-add { background: var(--dark); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; margin-top: 5px; cursor: pointer; }
 
-        /* TABLA ADMIN */
-        .table-wrap { overflow-x: auto; background: white; border-radius: 8px; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .table-wrap { overflow-x: auto; background: white; border-radius: 8px; margin-top: 15px; }
         table { width: 100%; border-collapse: collapse; min-width: 500px; font-size: 0.9rem; }
         th { background: #333; color: white; padding: 12px; text-align: left; }
         td { padding: 12px; border-bottom: 1px solid #eee; }
         .cost-txt { color: #888; font-size: 0.8rem; }
 
-        /* EL COMPITA */
         .compita-float { position: fixed; bottom: 20px; right: 20px; width: 75px; height: 75px; background: #222; border: 3px solid var(--primary); border-radius: 50%; color: var(--primary); font-size: 1.8rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 2000; cursor: pointer; }
         .compita-float.active { background: #ff4444; color: white; border-color: white; animation: pulse 1s infinite; }
         
-        /* LOGIN OVERLAY */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.98); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .pin-input { font-size: 2.5rem; width: 160px; text-align: center; border: 2px solid var(--dark); border-radius: 12px; margin: 20px 0; outline: none; }
+        .pin-input { font-size: 2.5rem; width: 160px; text-align: center; border: 2px solid var(--dark); border-radius: 12px; margin: 20px 0; }
 
         @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.1);} 100% {transform: scale(1);} }
     </style>
@@ -71,24 +63,22 @@
         <input type="text" id="main-in" class="search-box" placeholder="¿Qué buscas, patrón?" onkeyup="doSearch(this.value)">
         <button class="btn-google" onclick="goGoogle()">BUSCAR EN INTERNET</button>
     </div>
-
     <div id="results-view" style="display:none;">
         <div style="position:sticky; top:70px; background:var(--bg); padding:10px 0; z-index:900;">
             <input type="text" id="top-in" class="search-box" style="text-align:left; padding-left:20px;" onkeyup="doSearch(this.value)">
         </div>
-        <button onclick="backHome()" style="background:none; border:none; color:#666; font-weight:bold; padding:10px; cursor:pointer;">⬅ VOLVER AL INICIO</button>
+        <button onclick="backHome()" style="background:none; border:none; color:#666; font-weight:bold; padding:10px;">⬅ VOLVER</button>
         <div id="list-results"></div>
     </div>
 </div>
 
 <div id="pos" class="page">
-    <h2>TU CARRITO</h2>
+    <h2>CARRITO</h2>
     <div id="cart-list"></div>
     <div style="text-align:right; margin-top:20px;">
-        <span style="font-size:1.2rem;">Total a cobrar:</span>
-        <h1 id="cart-total">$0</h1>
+        <h1>Total: <span id="cart-total">$0</span></h1>
     </div>
-    <button onclick="finishSale()" style="width:100%; padding:20px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold; font-size:1.2rem;">COBRAR TICKET</button>
+    <button onclick="finishSale()" style="width:100%; padding:20px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold; font-size:1.2rem;">COBRAR</button>
 </div>
 
 <div id="admin" class="page">
@@ -96,45 +86,38 @@
         <h2>EXISTENCIAS</h2>
         <button onclick="showPage('home')" style="color:red; font-weight:bold; border:none; background:none;">SALIR</button>
     </div>
-
     <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px;">
-        <label>Ganancia Global (%):</label>
+        <label>Ganancia (%):</label>
         <input type="number" id="m-val" value="30" style="width:60px; padding:5px;">
         <button onclick="setMargin()" style="background:var(--info); color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold;">APLICAR</button>
     </div>
-
-    <input type="text" placeholder="Filtrar por nombre o código..." onkeyup="drawAdmin(this.value)" style="width:100%; padding:15px; box-sizing:border-box; border:1px solid #ccc; border-radius:10px;">
-    
+    <input type="text" placeholder="Filtrar..." onkeyup="drawAdmin(this.value)" style="width:100%; padding:15px; box-sizing:border-box; border:1px solid #ccc; border-radius:10px;">
     <div class="table-wrap">
         <table>
             <thead><tr><th>Producto</th><th>Costo/Venta</th><th>Acción</th></tr></thead>
             <tbody id="admin-body"></tbody>
         </table>
     </div>
-    <button onclick="resetAll()" style="width:100%; margin-top:40px; padding:15px; color:red; background:none; border:1px solid red; border-radius:10px;">⚠️ REINICIAR APP</button>
+    <button onclick="resetAll()" style="width:100%; margin-top:40px; padding:10px; color:red; background:none; border:1px solid red; border-radius:10px;">⚠️ RESET SISTEMA</button>
 </div>
 
 <div id="pin-modal" class="overlay">
-    <i class="fas fa-lock" style="font-size:3rem; color:var(--dark);"></i>
     <h3>PIN ADMINISTRADOR</h3>
     <input type="password" id="pin-in" class="pin-input" placeholder="****" maxlength="4">
-    <button onclick="verifyPin()" style="width:160px; padding:15px; background:var(--primary); border:none; font-weight:bold; border-radius:10px; font-size:1.1rem;">ENTRAR</button>
-    <p onclick="document.getElementById('pin-modal').style.display='none'" style="margin-top:20px; color:gray; cursor:pointer;">Cancelar</p>
+    <button onclick="verifyPin()" style="width:160px; padding:15px; background:var(--primary); border:none; font-weight:bold; border-radius:10px;">ENTRAR</button>
 </div>
 
 <script>
-    // --- BASE DE DATOS MAESTRA (INVENTARIO REAL) ---
+    // --- INVENTARIO REAL ---
     const MASTER_ITEMS = [
         {c:"E7691809", n:"Engrane Marcha Dodge (2)", cost:30}, {c:"E7691810", n:"Engrane Marcha Ford Bosch (1)", cost:30},
-        {c:"EM4", n:"Engrane Marcha Nissan (4) y Chevy", cost:29}, {c:"EM5", n:"Engrane Marcha VW Golf (5)", cost:29},
-        {c:"1224", n:"Bendix Zen Ford Motorcraft 10D", cost:114}, {c:"A618114ASS", n:"Armadura Nissan Hitachi PMGR 114", cost:264},
-        {c:"A011097E", n:"Armadura Nissan Chevy 619130", cost:264}, {c:"PC336246", n:"Porta Carbon Ford Nissan 336 246", cost:69},
+        {c:"EM4", n:"Engrane Marcha Nissan (4) y Chevy", cost:29}, {c:"1224", n:"Bendix Zen Ford Motorcraft 10D", cost:114},
+        {c:"A618114ASS", n:"Armadura Nissan Hitachi PMGR 114", cost:264}, {c:"PC336246", n:"Porta Carbon Ford Nissan 336 246", cost:69},
         {c:"PC336245", n:"Porta Carbon Nissan Chevy Bosch", cost:69}, {c:"B55", n:"Modulo Encendido Nissan Tsuru 16V", cost:543},
         {c:"BOM-TSURU", n:"Bomba Gasolina Bosch Tsuru III", cost:330}, {c:"RIH738TP", n:"Regulador Nissan Hitachi RIH 738", cost:317},
         {c:"F9004LED", n:"Foco 9004 LED 4 Caras Juego", cost:275}, {c:"67HELLA", n:"Foco 67 Hella (Suelto)", cost:3.30},
         {c:"158HELLA", n:"Foco 158 Pellizco (Suelto)", cost:2.40}, {c:"1034HELLA", n:"Foco 1034 Hella (Suelto)", cost:3.50},
-        {c:"BM70582", n:"Bulbo Motovent VW Caribe 82/68", cost:98}, {c:"CP1830M", n:"Cable Plastico 18 (30m)", cost:88},
-        {c:"952011", n:"Bocina Claxon VW Hella", cost:121}, {c:"SLDSS1750", n:"Automatico Ford Sistema Bosch", cost:220}
+        {c:"BM70582", n:"Bulbo Motovent VW Caribe 82/68", cost:98}, {c:"CP1830M", n:"Cable Plastico 18 (30m)", cost:88}
     ];
 
     let db = [];
@@ -142,20 +125,15 @@
     let margin = 30;
 
     window.onload = () => {
-        let savedDb = localStorage.getItem('millan_v23_db');
-        let savedMg = localStorage.getItem('millan_v23_mg');
-        
+        let savedDb = localStorage.getItem('millan_v24_db');
+        let savedMg = localStorage.getItem('millan_v24_mg');
         if(savedDb) db = JSON.parse(savedDb);
         else { db = JSON.parse(JSON.stringify(MASTER_ITEMS)); updatePrices(); }
-        
         if(savedMg) margin = parseInt(savedMg);
         document.getElementById('m-val').value = margin;
     };
 
-    function save() { 
-        localStorage.setItem('millan_v23_db', JSON.stringify(db)); 
-        localStorage.setItem('millan_v23_mg', margin);
-    }
+    function save() { localStorage.setItem('millan_v24_db', JSON.stringify(db)); localStorage.setItem('millan_v24_mg', margin); }
 
     function updatePrices() {
         let f = 1 + (margin/100);
@@ -163,7 +141,6 @@
         save();
     }
 
-    // --- NAVEGACIÓN ---
     function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -173,117 +150,75 @@
         if(id === 'admin') drawAdmin("");
     }
 
-    // --- BUSCADOR ---
     function doSearch(q) {
         q = q.toUpperCase();
         const gView = document.getElementById('google-view');
         const rView = document.getElementById('results-view');
         const list = document.getElementById('list-results');
-        
         if(q.length > 0) {
-            gView.style.display = 'none';
-            rView.style.display = 'block';
+            gView.style.display = 'none'; rView.style.display = 'block';
             document.getElementById('top-in').value = q;
-            
             let res = db.filter(p => p.n.toUpperCase().includes(q) || p.c.toUpperCase().includes(q));
             list.innerHTML = "";
-            
-            if(res.length === 0) {
-                list.innerHTML = `<div style="text-align:center; padding:30px; color:#666;">No lo tenemos en existencia.<br><button class="btn-google" onclick="goGoogle()">BUSCAR EN INTERNET</button></div>`;
-            } else {
-                res.forEach(p => {
-                    list.innerHTML += `<div class="card">
-                        <div class="card-info">
-                            <div class="card-title">${p.n}</div>
-                            <div class="card-code">${p.c}</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div class="price">$${p.price}</div>
-                            <button class="btn-add" onclick="toCart('${p.c}')">AGREGAR</button>
-                        </div>
-                    </div>`;
-                });
-            }
+            if(res.length === 0) list.innerHTML = `<div style="text-align:center; padding:30px;">No hay existencia carnal.</div>`;
+            else res.forEach(p => {
+                list.innerHTML += `<div class="card"><div><b>${p.n}</b><br><small>${p.c}</small></div><div style="text-align:right;"><div class="price">$${p.price}</div><button class="btn-add" onclick="toCart('${p.c}')">AGREGAR</button></div></div>`;
+            });
         } else { backHome(); }
     }
 
-    function backHome() {
-        document.getElementById('results-view').style.display = 'none';
-        document.getElementById('google-view').style.display = 'flex';
-        document.getElementById('main-in').value = "";
-    }
+    function backHome() { document.getElementById('results-view').style.display = 'none'; document.getElementById('google-view').style.display = 'flex'; document.getElementById('main-in').value = ""; }
 
-    function goGoogle() {
-        let t = document.getElementById('main-in').value || document.getElementById('top-in').value || "Refaccion";
-        window.open("https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(t), "_blank");
-    }
+    function goGoogle() { window.open("https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(document.getElementById('main-in').value || "Refaccion"), "_blank"); }
 
-    // --- CARRITO ---
-    function toCart(c) {
-        let p = db.find(x => x.c === c);
-        cart.push(p);
-        alert("Agregado patrón: " + p.n);
-    }
+    function toCart(c) { cart.push(db.find(x => x.c === c)); alert("Anotado patrón."); }
 
     function drawCart() {
-        const div = document.getElementById('cart-list');
-        let t = 0; div.innerHTML = "";
-        if(cart.length === 0) div.innerHTML = "<p style='text-align:center; color:gray; padding:20px;'>Carrito vacío.</p>";
-        cart.forEach((p, i) => {
-            t += p.price;
-            div.innerHTML += `<div style="background:white; padding:15px; margin-bottom:5px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #ddd;">
-                <span>${p.n}</span><span>$${p.price} <b style="color:red; margin-left:10px; cursor:pointer;" onclick="delCart(${i})">X</b></span>
-            </div>`;
-        });
+        const div = document.getElementById('cart-list'); let t = 0; div.innerHTML = "";
+        cart.forEach((p, i) => { t += p.price; div.innerHTML += `<div style="background:white; padding:15px; margin-bottom:5px; border-radius:10px; display:flex; justify-content:space-between;"><span>${p.n}</span><span>$${p.price} <b style="color:red;" onclick="delCart(${i})">X</b></span></div>`; });
         document.getElementById('cart-total').innerText = "$" + t;
     }
     function delCart(i) { cart.splice(i, 1); drawCart(); }
-    function finishSale() { if(cart.length > 0) { window.print(); if(confirm("¿Venta terminada?")) { cart = []; drawCart(); } } }
+    function finishSale() { if(cart.length > 0) { window.print(); cart = []; drawCart(); } }
 
-    // --- ADMIN ---
-    function askPin() { document.getElementById('pin-modal').style.display = 'flex'; document.getElementById('pin-in').value = ""; document.getElementById('pin-in').focus(); }
+    function askPin() { document.getElementById('pin-modal').style.display = 'flex'; }
     function verifyPin() { if(document.getElementById('pin-in').value === "1234") { document.getElementById('pin-modal').style.display = 'none'; showPage('admin'); } else alert("Error"); }
-    
     function drawAdmin(f) {
-        f = f.toUpperCase();
-        const b = document.getElementById('admin-body');
-        b.innerHTML = "";
-        db.forEach(p => {
-            if(p.n.toUpperCase().includes(f) || p.c.toUpperCase().includes(f)) {
-                b.innerHTML += `<tr>
-                    <td><b>${p.n}</b><br><small>${p.c}</small></td>
-                    <td><span class="cost-txt">C:$${p.cost}</span><br><b style="color:green">V:$${p.price}</b></td>
-                    <td><button onclick="delProd('${p.c}')" style="color:red; border:none; background:none; font-size:1.2rem;">🗑</button></td>
-                </tr>`;
-            }
-        });
+        f = f.toUpperCase(); const b = document.getElementById('admin-body'); b.innerHTML = "";
+        db.forEach(p => { if(p.n.toUpperCase().includes(f) || p.c.toUpperCase().includes(f)) b.innerHTML += `<tr><td><b>${p.n}</b><br><small>${p.c}</small></td><td><span class="cost-txt">$${p.cost}</span><br><b style="color:green">$${p.price}</b></td><td><button onclick="delProd('${p.c}')" style="color:red; border:none; background:none;">🗑</button></td></tr>`; });
     }
-    function delProd(c) { if(confirm("¿Borrar?")) { db = db.filter(x => x.c !== c); save(); drawAdmin(""); } }
-    function setMargin() { margin = parseInt(document.getElementById('m-val').value); updatePrices(); drawAdmin(""); alert("Precios actualizados al " + margin + "%"); }
-    function resetAll() { if(confirm("¿Borrar todo?")) { localStorage.clear(); location.reload(); } }
+    function delProd(c) { if(confirm("Borrar?")) { db = db.filter(x => x.c !== c); save(); drawAdmin(""); } }
+    function setMargin() { margin = parseInt(document.getElementById('m-val').value); updatePrices(); drawAdmin(""); }
+    function resetAll() { localStorage.clear(); location.reload(); }
 
-    // --- EL COMPITA (VOZ) ---
+    // --- EL COMPITA INTELIGENTE ---
     function startCompita() {
-        if(!('webkitSpeechRecognition' in window)) return alert("Usa Google Chrome carnal.");
+        if(!('webkitSpeechRecognition' in window)) return alert("Usa Chrome carnal.");
         const btn = document.getElementById('btn-compita');
         btn.classList.add('active');
         const rec = new webkitSpeechRecognition(); rec.lang = "es-MX";
         
-        rec.onend = () => btn.classList.remove('active');
-        
         rec.onresult = (e) => {
             let t = e.results[0][0].transcript.toLowerCase();
-            let q = t.replace("compita", "").replace("busca", "").replace("oye", "").trim();
+            // LIMPIAR LO QUE ESCUCHA EL CHALÁN
+            let q = t.replace("compita", "").replace("busca", "").replace("oye", "").replace("tienes", "").replace("hay", "").trim();
+            
             if(q === "") { speak("¿Qué pasó patrón? Dígame la pieza."); return; }
+            
+            // MOSTRAR VISUALMENTE
+            showPage('home');
             doSearch(q);
-            let p = db.find(x => x.n.toLowerCase().includes(q));
-            if(p) speak("Simón carnal, cuesta " + p.price + " varos."); 
+
+            // BUSCAR EN LA BASE DE DATOS REAL
+            let found = db.find(x => x.n.toLowerCase().includes(q) || x.c.toLowerCase().includes(q));
+            
+            if(found) speak("Simón patrón, sí hay " + found.n + ". Cuesta " + found.price + " varos.");
             else speak("Híjole patrón, no lo topo en existencia.");
         };
+        rec.onend = () => btn.classList.remove('active');
         rec.start();
     }
-    function speak(m) { let u = new SpeechSynthesisUtterance(m); u.lang = "es-MX"; u.rate = 1.1; window.speechSynthesis.speak(u); }
-
+    function speak(m) { window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(m); u.lang = "es-MX"; u.rate = 1.1; window.speechSynthesis.speak(u); }
 </script>
 </body>
 </html>
