@@ -1,35 +1,32 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MILLÁN DIAGNÓSTICO V42 - FINAL</title>
+    <title>MILLÁN DIAGNÓSTICO V43 - FULL SCAN</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #ffd700; --dark: #000; --bg: #f8f9fa; --success: #28a745; --wa: #25d366; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--bg); padding-bottom: 90px; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); padding-bottom: 90px; }
         .header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 3px solid var(--primary); }
-        .logo { font-weight: 900; font-size: 1.1rem; text-transform: uppercase; }
+        .logo { font-weight: 900; font-size: 1.1rem; }
         .logo span { color: var(--primary); }
         .nav-btn { background: none; border: none; color: white; font-size: 1.4rem; margin-left: 15px; cursor: pointer; opacity: 0.8; }
         .nav-btn.active { opacity: 1; color: var(--primary); }
         .page { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
         .page.active { display: block; }
         .banner { background: #1a1a1a; color: white; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid var(--primary); margin-bottom: 20px; }
-        .banner h2 { color: var(--primary); margin: 0; font-size: 1.4rem; }
-        .contact-item { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; font-weight: bold; font-size: 1rem; }
-        .fa-whatsapp { color: var(--wa); font-size: 1.2rem; }
         .search-box { width: 100%; padding: 15px; border-radius: 30px; border: 2px solid #ddd; font-size: 1.1rem; text-align: center; box-sizing: border-box; outline: none; }
         .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
         .price { font-size: 1.4rem; font-weight: 800; color: var(--success); }
-        .stock-tag { background: #f0f0f0; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; color: #666; }
-        .yuls-btn { position: fixed; bottom: 20px; right: 20px; width: 85px; height: 85px; background: #000; border: 3px solid var(--primary); border-radius: 50%; color: var(--primary); font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 2000; text-align: center; font-size: 0.9rem; line-height: 1; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        .yuls-btn.active { background: #dc3545; color: white; animation: pulse 1s infinite; }
+        .stock-tag { background: #f0f0f0; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
+        #reader { width: 100%; border-radius: 15px; overflow: hidden; display: none; margin-bottom: 20px; }
+        .yuls-btn { position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; background: #000; border: 3px solid var(--primary); border-radius: 50%; color: var(--primary); font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 2000; text-align: center; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; font-size: 0.85rem; }
         th { background: #222; color: white; padding: 12px; text-align: left; }
         td { padding: 12px; border-bottom: 1px solid #eee; }
-        @keyframes pulse { 0% {transform: scale(1.1);} 100% {transform: scale(1);} }
     </style>
 </head>
 <body>
@@ -38,74 +35,73 @@
     <div class="logo">MILLÁN <span>DIAGNÓSTICO</span></div>
     <div>
         <button onclick="showPage('home')" id="n-home" class="nav-btn active"><i class="fas fa-search"></i></button>
-        <button onclick="showPage('pos')" id="n-pos" class="nav-btn"><i class="fas fa-shopping-cart"></i></button>
+        <button onclick="showPage('pos')" id="n-pos" class="nav-btn"><i class="fas fa-camera"></i></button>
         <button onclick="askPin()" id="n-admin" class="nav-btn"><i class="fas fa-user-shield"></i></button>
     </div>
 </header>
 
-<div class="yuls-btn" id="yuls-trigger" onclick="startYuls()">YULS<br>EL JEFE</div>
+<div class="yuls-btn" id="yuls-trigger" onclick="startYuls()">YULS<br>JEFE</div>
 
 <div id="home" class="page active">
     <div class="banner">
-        <h2>ELECTRIPARTES MILLÁN</h2>
-        <p style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 10px;">Técnico Especialista en Módulos y Diagnóstico</p>
-        <div class="contact-item"><i class="fab fa-whatsapp"></i> 777 683 8196</div>
-        <div class="contact-item"><i class="fab fa-whatsapp"></i> 221 956 7392</div>
+        <h2 style="color:var(--primary)">ELECTRIPARTES MILLÁN</h2>
+        <div style="margin-top:10px;"><i class="fab fa-whatsapp"></i> 777 683 8196 | 221 956 7392</div>
     </div>
-    <input type="text" id="main-in" class="search-box" placeholder="Busca pieza o habla con el Yuls..." onkeyup="doSearch(this.value)">
+    <input type="text" id="main-in" class="search-box" placeholder="Busca pieza o usa el Yuls..." onkeyup="doSearch(this.value)">
     <div id="results-view" style="margin-top:20px;"></div>
 </div>
 
 <div id="pos" class="page">
-    <h2>CARRITO DE VENTA</h2>
+    <button onclick="startScan()" style="width:100%; padding:15px; background:#000; color:white; border-radius:10px; font-weight:bold; margin-bottom:15px;"><i class="fas fa-barcode"></i> ESCANEAR CÓDIGO</button>
+    <div id="reader"></div>
     <div id="cart-list"></div>
-    <div style="text-align:right; margin-top:20px; padding: 15px; background: white; border-radius: 10px;">
+    <div style="text-align:right; margin-top:20px; padding:15px; background:white; border-radius:10px;">
         <h2 id="total-txt" style="margin:0;">Total: $0</h2>
-        <button onclick="finishSale()" style="width:100%; margin-top:15px; padding:15px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold; font-size:1.1rem;">IMPRIMIR TICKET</button>
+        <button onclick="finishSale()" style="width:100%; margin-top:15px; padding:15px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold;">IMPRIMIR TICKET</button>
     </div>
 </div>
 
 <div id="admin" class="page">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3>INVENTARIO (INVERSIÓN TOTAL)</h3>
-        <div id="inv-val" style="font-weight:bold; color:var(--success); background:white; padding:8px 12px; border-radius:8px; border: 1px solid #ccc;"></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3>INVERSIÓN TOTAL</h3>
+        <div id="inv-val" style="font-weight:bold; color:var(--success); background:white; padding:10px; border-radius:8px;"></div>
     </div>
-    <div style="overflow-x:auto; margin-top:15px; border-radius: 10px;">
-        <table>
-            <thead><tr><th>Producto</th><th>Stock</th><th>Costo</th><th>Venta</th></tr></thead>
-            <tbody id="admin-tbody"></tbody>
-        </table>
-    </div>
+    <table>
+        <thead><tr><th>Producto</th><th>Stock</th><th>Costo</th><th>Venta</th></tr></thead>
+        <tbody id="admin-tbody"></tbody>
+    </table>
 </div>
 
 <script>
-    // BASE DE DATOS FINAL EMPATADA CON TUS 10 HOJAS ($40,000 INVERSIÓN)
+    // BASE DE DATOS COMPLETA EXTRAÍDA DEL TXT
     const MASTER_DB = [
-        {c:"PC10530941US", n:"Porta Carbón Aveo Usatech", s:2, cost:75},
+        {c:"SF492", n:"Solenoide Pared Acurat Cochino", s:5, cost:195},
+        {c:"CVF49", n:"Carbón Marcha Bosch VF49", s:20, cost:12},
+        {c:"PC10530941US", n:"Porta Carbón GM Aveo Usatech", s:2, cost:75},
         {c:"PC698309", n:"Porta Carbón Mitsubishi Gde Asser", s:3, cost:75},
-        {c:"B55-ASSER", n:"Módulo Nissan Tsuru 16V", s:1, cost:543},
+        {c:"B55", n:"Módulo Nissan Tsuru 16V", s:1, cost:543},
         {c:"B6305NTN", n:"Balero 6305 NTN Alternador", s:3, cost:109},
         {c:"B6203N", n:"Balero 6203 NTN", s:10, cost:34},
         {c:"F9007LED4C", n:"Foco 9007 LED ItalioTurbo", s:2, cost:253},
         {c:"BM70582", n:"Bulbo Motovent VW Caribe", s:3, cost:98},
         {c:"RIH738TP", n:"Regulador Nissan Hitachi Asser", s:2, cost:317},
-        {c:"A618114", n:"Armadura Nissan Hitachi PMGR", s:3, cost:264},
-        {c:"SF492", n:"Solenoide Pared Acurat Cochino", s:5, cost:195},
-        {c:"B6201N", n:"Balero 6201 NTN", s:10, cost:35},
-        {c:"B6000N", n:"Balero 6000 NTN", s:2, cost:49},
-        {c:"RF784TR", n:"Regulador Ford F784 Transpo", s:3, cost:116},
-        {c:"952011", n:"Bocina Claxon VW Hella", s:3, cost:121},
-        {c:"FC15AX100", n:"Fusible Clavija 15A Pq100", s:5, cost:85}
+        {c:"A618114ASS", n:"Armadura Nissan Hitachi PMGR", s:3, cost:264},
+        {c:"FC15AX100", n:"Fusible Clavija 15A Pq100", s:5, cost:85},
+        {c:"CP1830M", n:"Cable Plástico 18/30Mts", s:2, cost:88},
+        {c:"P905865", n:"Pastilla Ignición Jetta A3", s:5, cost:92},
+        {c:"TZ38C", n:"Terminal Zapata 3/8 Cobrizada", s:20, cost:5},
+        {c:"052011", n:"Bocina Claxon VW Hella", s:3, cost:121},
+        {c:"1224", n:"Bendix Zen Ford 10 Dientes", s:1, cost:114}
     ];
 
-    let db = []; let cart = [];
+    let db = []; let cart = []; let html5QrCode;
 
     function init() {
-        let saved = localStorage.getItem('millan_v42_db');
+        let saved = localStorage.getItem('millan_v43_db');
         if(saved) db = JSON.parse(saved);
         else {
             db = MASTER_DB.map(p => ({...p, p: Math.ceil(p.cost * 1.35)}));
-            localStorage.setItem('millan_v42_db', JSON.stringify(db));
+            localStorage.setItem('millan_v43_db', JSON.stringify(db));
         }
         renderAdmin();
     }
@@ -115,7 +111,7 @@
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('n-'+id).classList.add('active');
-        if(id === 'pos') drawCart();
+        if(id === 'admin') renderAdmin();
     }
 
     function doSearch(q) {
@@ -125,10 +121,10 @@
         let filtered = db.filter(p => p.n.toUpperCase().includes(q) || p.c.toUpperCase().includes(q));
         res.innerHTML = filtered.map(p => `
             <div class="card">
-                <div><b>${p.n}</b><br><span class="stock-tag">Existencia: ${p.s}</span></div>
+                <div><b>${p.n}</b><br><span class="stock-tag">Stock: ${p.s}</span></div>
                 <div style="text-align:right">
                     <div class="price">$${p.p}</div>
-                    <button onclick="toCart('${p.c}')" style="background:#000;color:#fff;border:none;padding:10px 15px;border-radius:8px;font-weight:bold;cursor:pointer;">Cobrar</button>
+                    <button onclick="toCart('${p.c}')" style="background:#000;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;">Cobrar</button>
                 </div>
             </div>
         `).join('');
@@ -138,14 +134,14 @@
         let item = db.find(x => x.c === c);
         if(item && item.s > 0) {
             cart.push(item); item.s--;
-            localStorage.setItem('millan_v42_db', JSON.stringify(db));
-            drawCart(); alert("¡Agregado al ticket!");
-        } else alert("¡Ya no hay en stock!");
+            localStorage.setItem('millan_v43_db', JSON.stringify(db));
+            drawCart(); alert("¡Agregado!");
+        } else alert("Sin stock");
     }
 
     function drawCart() {
         let t = 0; const d = document.getElementById('cart-list'); d.innerHTML = "";
-        cart.forEach((p, i) => { t += p.p; d.innerHTML += `<div style="background:white;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;border-radius:10px;box-shadow:0 2px 4px rgba(0,0,0,0.05);"><span>${p.n}</span><b>$${p.p}</b></div>`; });
+        cart.forEach((p, i) => { t += p.p; d.innerHTML += `<div style="background:white;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;border-radius:10px;"><span>${p.n}</span><b>$${p.p}</b></div>`; });
         document.getElementById('total-txt').innerText = "Total: $" + t;
     }
 
@@ -156,32 +152,31 @@
         let total = 0; b.innerHTML = "";
         db.forEach(p => {
             total += (p.cost * p.s);
-            b.innerHTML += `<tr><td><b>${p.n}</b><br><small>${p.c}</small></td><td>${p.s}</td><td>$${p.cost}</td><td style="color:green;font-weight:bold;">$${p.p}</td></tr>`;
+            b.innerHTML += `<tr><td>${p.n}</td><td>${p.s}</td><td>$${p.cost}</td><td style="color:green;font-weight:bold;">$${p.p}</td></tr>`;
         });
         document.getElementById('inv-val').innerText = "$" + total.toLocaleString();
     }
 
     function askPin() { if(prompt("PIN ADMIN:") === "1234") showPage('admin'); }
 
+    // --- ESCÁNER DE CÁMARA ---
+    function startScan() {
+        document.getElementById('reader').style.display = 'block';
+        html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, 
+            (decodedText) => {
+                toCart(decodedText);
+                html5QrCode.stop();
+                document.getElementById('reader').style.display = 'none';
+            });
+    }
+
+    // --- EL YULS ---
     function startYuls() {
         if(!window.webkitSpeechRecognition) return alert("Usa Chrome");
         const rec = new webkitSpeechRecognition(); rec.lang = "es-MX";
-        document.getElementById('yuls-trigger').classList.add('active');
+        document.getElementById('yuls-trigger').style.add('active');
         speak("¿Qué onda Millán? ¿Qué buscamos?");
         rec.onresult = (e) => {
             let t = e.results[0][0].transcript.toLowerCase();
-            let found = db.find(p => t.includes(p.n.toLowerCase()));
-            if(found) {
-                speak("Simón carnal, el " + found.n + " lo tengo en " + found.p + " varos.");
-                doSearch(found.n);
-            } else speak("N'ombre carnal, esa no la topo.");
-        };
-        rec.onend = () => document.getElementById('yuls-trigger').classList.remove('active');
-        rec.start();
-    }
-    function speak(m) { window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(m); u.lang = "es-MX"; window.speechSynthesis.speak(u); }
-
-    init();
-</script>
-</body>
-</html>
+            let found =
