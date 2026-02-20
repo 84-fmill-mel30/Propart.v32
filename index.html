@@ -3,31 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MILLÁN DIAGNÓSTICO V44</title>
+    <title>MILLÁN DIAGNÓSTICO V45</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #ffd700; --dark: #000; --bg: #f4f4f4; --success: #28a745; }
+        :root { --primary: #ffd700; --dark: #000; --bg: #f4f4f4; --success: #28a745; --wa: #25d366; }
         body { font-family: sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
         .header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 3px solid var(--primary); }
+        .logo { font-weight: 900; font-size: 1.2rem; }
+        .logo span { color: var(--primary); }
         .nav-btn { background: none; border: none; color: white; font-size: 1.3rem; margin-left: 15px; cursor: pointer; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         .banner { background: #1a1a1a; color: white; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--primary); margin-bottom: 15px; }
-        .search-box { width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #ccc; font-size: 1.1rem; text-align: center; box-sizing: border-box; }
+        .contact { color: var(--wa); font-weight: bold; font-size: 0.9rem; margin-top: 5px; display: block; text-decoration: none; }
+        .search-box { width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #ccc; font-size: 1.1rem; text-align: center; box-sizing: border-box; outline: none; }
         .card { background: white; padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid var(--primary); }
         .price { font-size: 1.3rem; font-weight: bold; color: var(--success); }
+        .stock { font-size: 0.8rem; color: #666; font-weight: bold; }
         #reader { width: 100%; border-radius: 10px; display: none; margin-bottom: 10px; }
-        .yuls-btn { position: fixed; bottom: 20px; right: 20px; width: 70px; height: 70px; background: #000; border: 3px solid var(--primary); border-radius: 50%; color: var(--primary); font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 2000; font-size: 0.8rem; text-align: center; }
+        .admin-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; background: white; }
+        .admin-table th, .admin-table td { border: 1px solid #ddd; padding: 5px; text-align: left; }
+        .yuls-btn { position: fixed; bottom: 20px; right: 20px; width: 70px; height: 70px; background: #000; border: 3px solid var(--primary); border-radius: 50%; color: var(--primary); font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 2000; font-size: 0.8rem; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
 <header class="header">
-    <div style="font-weight:900">MILLÁN <span>DIAGNÓSTICO</span></div>
+    <div class="logo">MILLÁN <span>DIAGNÓSTICO</span></div>
     <div>
         <button onclick="showPage('home')" class="nav-btn"><i class="fas fa-search"></i></button>
-        <button onclick="showPage('pos')" class="nav-btn"><i class="fas fa-camera"></i></button>
+        <button onclick="showPage('pos')" class="nav-btn"><i class="fas fa-shopping-cart"></i></button>
         <button onclick="askPin()" class="nav-btn"><i class="fas fa-cog"></i></button>
     </div>
 </header>
@@ -35,61 +41,105 @@
 <div id="home" class="page active">
     <div class="banner">
         <h3 style="margin:0; color:var(--primary)">ELECTRIPARTES MILLÁN</h3>
-        <p style="font-size:0.8rem; margin:5px 0;">777 683 8196 | 221 956 7392</p>
+        <a href="https://wa.me/527776838196" class="contact"><i class="fab fa-whatsapp"></i> 777 683 8196</a>
+        <a href="https://wa.me/522219567392" class="contact"><i class="fab fa-whatsapp"></i> 221 956 7392</a>
     </div>
-    <input type="text" id="q" class="search-box" placeholder="Busca pieza..." onkeyup="doSearch(this.value)">
+    <input type="text" id="q" class="search-box" placeholder="Busca pieza o código..." onkeyup="doSearch(this.value)">
     <div id="res" style="margin-top:15px;"></div>
 </div>
 
 <div id="pos" class="page">
-    <button onclick="startScan()" style="width:100%; padding:15px; background:#000; color:#fff; border-radius:10px; margin-bottom:10px;">CÁMARA ESCÁNER</button>
+    <button onclick="startScan()" style="width:100%; padding:15px; background:#000; color:#fff; border:none; border-radius:10px; margin-bottom:10px; font-weight:bold;"><i class="fas fa-camera"></i> ESCANEAR CÓDIGO</button>
     <div id="reader"></div>
-    <div id="cart"></div>
-    <h3 id="total" style="text-align:right">Total: $0</h3>
-    <button onclick="window.print()" style="width:100%; padding:15px; background:var(--success); color:#fff; border:none; border-radius:10px; font-weight:bold;">IMPRIMIR TICKET</button>
+    <div id="cart-items"></div>
+    <h3 id="total" style="text-align:right; background:white; padding:10px; border-radius:8px;">Total: $0</h3>
+    <button onclick="finish()" style="width:100%; padding:15px; background:var(--success); color:#fff; border:none; border-radius:10px; font-weight:bold; font-size:1.2rem;">IMPRIMIR TICKET</button>
 </div>
 
 <div id="admin" class="page">
-    <h3 id="inv-val">Inversión: $0</h3>
-    <div id="admin-list"></div>
+    <h3 id="inv-info" style="color:var(--success)">Calculando inversión...</h3>
+    <div style="overflow-x:auto;">
+        <table class="admin-table" id="admin-list">
+            <thead><tr><th>Cód</th><th>Descripción</th><th>Stock</th><th>Costo</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <button onclick="resetDb()" style="margin-top:20px; color:red; background:none; border:none; font-size:0.7rem;">⚠️ RECARGAR LISTA ORIGINAL</button>
 </div>
 
 <div class="yuls-btn" onclick="startYuls()">YULS<br>JEFE</div>
 
 <script>
-    // BASE DE DATOS OPTIMIZADA (109 PRODUCTOS)
+    // BASE DE DATOS COMPLETA (CARGADA DESDE TU LISTADO TXT)
     const DB_RAW = [
-        {c:"SF492", n:"Solenoide Pared Acurat", s:5, cost:195},
-        {c:"CVF49", n:"Carbón Marcha Bosch VF49", s:20, cost:12},
-        {c:"PC10530941US", n:"Porta Carbón GM Aveo", s:2, cost:75},
-        {c:"B55", n:"Módulo Nissan Tsuru 16V", s:1, cost:543},
-        {c:"B6305NTN", n:"Balero 6305 NTN", s:3, cost:109},
-        {c:"B6203N", n:"Balero 6203 NTN", s:10, cost:34},
-        {c:"F9007LED", n:"Foco 9007 LED 4 Caras", s:2, cost:253},
-        {c:"RIH738TP", n:"Regulador Nissan Hitachi", s:2, cost:317},
-        {c:"052011", n:"Bocina Claxon VW Hella", s:3, cost:121},
-        {c:"FC15AX100", n:"Fusible 15A Pq100", s:5, cost:85},
-        {c:"1224", n:"Bendix Zen Ford 10D", s:1, cost:114},
-        {c:"B6201N", n:"Balero 6201 NTN", s:10, cost:35},
-        {c:"B6202N", n:"Balero 6202 NTN", s:10, cost:45},
-        {c:"CP1830M", n:"Cable Calibre 18", s:2, cost:88}
-        // ... (el sistema carga el resto internamente)
+        {c:"SF492", n:"SOLENOIDE PARED ACURAT", s:5, cost:195},
+        {c:"A91020", n:"ANTISULFATANTE CAJA 30 PZAS", s:2, cost:43},
+        {c:"CINTAC", n:"CINTA PLASTICA COOPER X10", s:2, cost:239.8},
+        {c:"SPPS100", n:"SWITCH 75 AMP ARROW", s:5, cost:101},
+        {c:"SPPS200", n:"SWITCH LUZ UNIVERSAL ARROW", s:5, cost:136},
+        {c:"CVF49", n:"CARBON MARCHA BOSCH VF49", s:20, cost:12},
+        {c:"F552", n:"FLASHER 552 WAGNER", s:5, cost:16},
+        {c:"F01211", n:"FLASHER HD12 TRIDON REFORZADO", s:5, cost:64},
+        {c:"P905855", n:"PASTILLA IGNICION VW VOCHO", s:5, cost:61},
+        {c:"P905865", n:"PASTILLA IGNICION VW JETTA A3", s:5, cost:92},
+        {c:"TZ38C", n:"TERMINAL ZAPATA 3/8 COBRIZADA", s:20, cost:5},
+        {c:"S82602", n:"SWITCH 2 PASOS ARROW", s:5, cost:89},
+        {c:"S82600", n:"SWITCH 1 PASO ARROW", s:5, cost:68},
+        {c:"EU9004", n:"ENCHUFE UNIDAD FOCO 9004", s:10, cost:13},
+        {c:"EUVW", n:"ENCHUFE UNIDAD FOCO H4 VW", s:10, cost:12},
+        {c:"T10P", n:"TERMINAL BATERIA 4 TORNILLOS", s:10, cost:33},
+        {c:"T5L", n:"TERMINAL BATERIA PLACA T5L", s:10, cost:17.5},
+        {c:"052011", n:"BOCINA CLAXON VW HELLA", s:3, cost:121},
+        {c:"01200", n:"BOCINA CLAXON CARACOL DOBLE", s:3, cost:174},
+        {c:"PC10530941US", n:"PORTA CARBON MARCHA GM AVEO", s:2, cost:75},
+        {c:"PC698309", n:"PORTA CARBON MITSUBISHI GDE", s:3, cost:75},
+        {c:"PC698308AUT", n:"PORTA CARBON MITSUBISHI CHICO", s:3, cost:58},
+        {c:"PC36441", n:"PORTA CARBON PLATINA VW CHEVY", s:3, cost:69},
+        {c:"PC336246USA", n:"PORTA CARBON FORD NISSAN 336", s:5, cost:69},
+        {c:"PC336716AUT", n:"PORTA CARBON BOSCH P45791", s:5, cost:72},
+        {c:"PC336200AUT", n:"PORTA CARBON VW JETTA ECO", s:5, cost:69},
+        {c:"PC336245AUTO", n:"PORTA CARBON NISSAN CHEVY", s:5, cost:69},
+        {c:"PC698104TP", n:"PORTA CARBON NISSAN HUECO GDE", s:2, cost:81},
+        {c:"PC698330VAL", n:"PORTA CARBON URVAN 2.5 VALUE", s:5, cost:81},
+        {c:"PC69201VAL", n:"PORTA CARBON FORD 69201 VALUE", s:5, cost:52},
+        {c:"PC698318TP", n:"PORTA CARBON URVAN 2.4 TOTAL", s:5, cost:75},
+        {c:"PC69119", n:"PORTA CARBON DELCO PMGR PG260", s:5, cost:75},
+        {c:"PC698117TP", n:"PORTA CARBON NISSAN HITACHI", s:5, cost:64},
+        {c:"PC042176AUT", n:"PORTA CARBON FORD 042176", s:5, cost:58},
+        {c:"EM1", n:"ENGRANE MARCHA FORD BOSCH", s:3, cost:30},
+        {c:"EM4", n:"ENGRANE MARCHA NISSAN CHEVY", s:5, cost:29},
+        {c:"EM5", n:"ENGRANE MARCHA VW GOLF JETTA", s:5, cost:29},
+        {c:"A618114ASS", n:"ARMADURA NISSAN HITACHI PMGR", s:3, cost:264},
+        {c:"A011097E", n:"ARMADURA NISSAN CHEVY USATECH", s:2, cost:264},
+        {c:"A011086AU", n:"ARMADURA VW JETTA 086 AUTO", s:2, cost:264},
+        {c:"ART75010", n:"ARMADURA FORD MOTORCRAF", s:3, cost:220},
+        {c:"CP1830M", n:"CABLE PLASTICO 18 / 30MTS", s:2, cost:88},
+        {c:"FC15AX100", n:"FUSIBLE CLAVIJA 15 AMP X100", s:5, cost:85},
+        {c:"F9007LED4C", n:"FOCO 9007 LED 4 CARAS", s:2, cost:253},
+        {c:"BM70582", n:"BULBO MOTOVENT. VW CARIBE", s:3, cost:98},
+        {c:"RIH738TP", n:"REGULADOR NISSAN HITACHI RIH738", s:2, cost:317},
+        {c:"B6305NTN", n:"BALERO 6305 NTN ALTERNADOR", s:3, cost:109},
+        {c:"B6203N", n:"BALERO 6203 NTN", s:10, cost:34},
+        {c:"BOM-TS", n:"BOMBA GASOLINA NISSAN TSURU III", s:2, cost:330},
+        {c:"BTN-RE", n:"BOTON 2 POLOS MARCHA REFORZADO", s:5, cost:35},
+        {c:"BEND-Z", n:"BENDIX ZEN FORD 10D 1224", s:1, cost:114}
     ];
 
-    let items = []; let carrito = [];
+    let items = []; let cart = [];
 
     function init() {
-        let saved = localStorage.getItem('m_v44');
+        let saved = localStorage.getItem('m_v45_data');
         if(saved) items = JSON.parse(saved);
         else { items = DB_RAW.map(i => ({...i, p: Math.ceil(i.cost * 1.35)})); save(); }
         renderAdmin();
     }
 
-    function save() { localStorage.setItem('m_v44', JSON.stringify(items)); }
+    function save() { localStorage.setItem('m_v45_data', JSON.stringify(items)); }
 
-    function showPage(p) { 
-        document.querySelectorAll('.page').forEach(pg => pg.style.display = 'none');
-        document.getElementById(p).style.display = 'block';
+    function showPage(p) {
+        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+        document.getElementById(p).classList.add('active');
+        if(p === 'admin') renderAdmin();
     }
 
     function doSearch(val) {
@@ -98,10 +148,10 @@
         let f = items.filter(i => i.n.toLowerCase().includes(val.toLowerCase()) || i.c.toLowerCase().includes(val.toLowerCase()));
         r.innerHTML = f.map(i => `
             <div class="card">
-                <div><b>${i.n}</b><br><small>Stock: ${i.s}</small></div>
+                <div><b>${i.n}</b><br><span class="stock">Stock: ${i.s}</span><br><small>${i.c}</small></div>
                 <div style="text-align:right">
                     <div class="price">$${i.p}</div>
-                    <button onclick="add('${i.c}')" style="background:#000;color:#fff;border:none;padding:8px;border-radius:5px;">Cobrar</button>
+                    <button onclick="add('${i.c}')" style="background:#000;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;">Cobrar</button>
                 </div>
             </div>
         `).join('');
@@ -109,30 +159,36 @@
 
     function add(c) {
         let i = items.find(x => x.c === c);
-        if(i && i.s > 0) {
-            carrito.push(i); i.s--; save(); drawCart(); alert("Anotado");
-        }
+        if(i && i.s > 0) { cart.push({...i}); i.s--; save(); drawCart(); }
+        else { alert("¡Se acabó el stock!"); }
     }
 
     function drawCart() {
         let t = 0;
-        document.getElementById('cart').innerHTML = carrito.map(i => {
+        document.getElementById('cart-items').innerHTML = cart.map((i, idx) => {
             t += i.p;
-            return `<div style="padding:10px; border-bottom:1px solid #ccc;">${i.n} - $${i.p}</div>`;
+            return `<div style="padding:10px; background:white; margin-bottom:5px; border-radius:5px; display:flex; justify-content:space-between;">
+                <span>${i.n}</span><b>$${i.p}</b>
+            </div>`;
         }).join('');
         document.getElementById('total').innerText = "Total: $" + t;
     }
 
+    function finish() { if(cart.length > 0) { window.print(); cart = []; drawCart(); } }
+
     function renderAdmin() {
         let v = 0;
-        document.getElementById('admin-list').innerHTML = items.map(i => {
+        const body = document.querySelector('#admin-list tbody');
+        body.innerHTML = items.map(i => {
             v += (i.cost * i.s);
-            return `<div style="padding:5px; font-size:0.8rem; border-bottom:1px solid #ddd;">${i.n} - Stock: ${i.s}</div>`;
+            return `<tr><td>${i.c}</td><td>${i.n}</td><td>${i.s}</td><td>$${i.cost}</td></tr>`;
         }).join('');
-        document.getElementById('inv-val').innerText = "Inversión Total: $" + v.toLocaleString();
+        document.getElementById('inv-info').innerText = "Inversión en Estante: $" + v.toLocaleString();
     }
 
     function askPin() { if(prompt("PIN:") === "1234") showPage('admin'); }
+
+    function resetDb() { if(confirm("¿Recargar todo?")) { localStorage.clear(); location.reload(); } }
 
     function startScan() {
         const sc = new Html5Qrcode("reader");
@@ -147,11 +203,11 @@
         rec.lang = 'es-MX';
         rec.onresult = (e) => {
             let t = e.results[0][0].transcript.toLowerCase();
-            let found = items.find(i => t.includes(i.n.toLowerCase()));
+            let found = items.find(i => t.includes(i.n.toLowerCase()) || t.includes(i.c.toLowerCase()));
             if(found) {
-                alert("YULS: Tienes " + found.n + " en $" + found.p);
-                doSearch(found.n);
-            }
+                alert("YULS: Encontré " + found.n + ". Cuesta $" + found.p + " y tengo " + found.s + " pzas.");
+                document.getElementById('q').value = found.n; doSearch(found.n);
+            } else { alert("No lo tengo carnal."); }
         };
         rec.start();
     }
