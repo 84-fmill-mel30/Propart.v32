@@ -1,148 +1,550 @@
-</div>
+import React, { useState, useEffect } from 'react';
+import { 
+  ShoppingCart, BarChart3, Settings, Package, 
+  Camera, Printer, Search, Wrench, Bot, Phone, MapPin, 
+  Plus, Trash2, Lock, Unlock, TrendingUp, BookOpen, AlertCircle
+} from 'lucide-react';
 
-<script>
-    // --- INVENTARIO COMPLETO EMPATADO (10 HOJAS) ---
-    const RAW_DB = [
-        // PORTACARBONES
-        {c:"PC10530941", n:"Porta Carbón GM Aveo Usatech", s:2, cost:75},
-        {c:"PC698309", n:"Porta Carbón Mitsubishi Grande Asser", s:3, cost:75},
-        {c:"PC698308", n:"Porta Carbón Mitsubishi Chico Automotive", s:3, cost:58},
-        {c:"PC36441", n:"Porta Carbón Platina/Chevy Valeo", s:3, cost:69},
-        {c:"PC336246", n:"Porta Carbón Ford Nissan 336246 USAT", s:5, cost:69},
-        {c:"PC336245", n:"Porta Carbón Nissan Chevy Bosch Tipo", s:5, cost:69},
-        {c:"PC698330", n:"Porta Carbón Mitsubishi Urvan 2.5 Value", s:5, cost:81},
-        {c:"PC698318", n:"Porta Carbón Nissan Urvan 2.4 Total Parts", s:5, cost:75},
-        {c:"PC69114", n:"Porta Carbón Nissan 69114 Hitachi", s:5, cost:64},
+// --- BASE DE DATOS INICIAL ---
+const INVENTARIO_INICIAL = [
+  { id: '1001', nombre: 'SOLENOIDE PARED ACURAT', costoBase: 150.00, stock: 5, categoria: 'Marchas' },
+  { id: '1002', nombre: 'BOBINA NISSAN TSURU III', costoBase: 300.00, stock: 2, categoria: 'Encendido' },
+  { id: '1003', nombre: 'FLASHER 552 WAGNER', costoBase: 12.00, stock: 15, categoria: 'Iluminación' },
+  { id: '1004', nombre: 'MODULO ENCENDIDO VW 7 PINS', costoBase: 180.00, stock: 1, categoria: 'Módulos' },
+  { id: '1005', nombre: 'FOCO H4 LED 4 CARAS', costoBase: 195.00, stock: 4, categoria: 'Iluminación' },
+  { id: '1006', nombre: 'SENSOR MAF NISSAN D21', costoBase: 450.00, stock: 0, categoria: 'Sensores' },
+];
+
+const MANUALES_DB = [
+  { titulo: "Manual Bobinas Nissan COP 3 y 4 Pines", tipo: "PDF" },
+  { titulo: "Módulos de Encendido VW Temic", tipo: "Diagrama" },
+  { titulo: "Pinout ECUs Motronic VAG", tipo: "Base de Datos" }
+];
+
+const CONTACTOS_MAYOREO = [
+  { empresa: "Sagaji", tel: "55 5000 0000", web: "www.sagaji.com.mx", notas: "Excelente para partes eléctricas y fuel injection." },
+  { empresa: "Rolcar", tel: "800 000 0000", web: "www.rolcar.com.mx", notas: "Surtido general, buenas líneas de crédito." }
+];
+
+export default function ElectricaMillanApp() {
+  const [activeTab, setActiveTab] = useState('pos');
+  const [inventario, setInventario] = useState(INVENTARIO_INICIAL);
+  const [carrito, setCarrito] = useState([]);
+  const [margenGanancia, setMargenGanancia] = useState(30); 
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [isPrinting, setIsPrinting] = useState(false);
+  const [ventasHistoricas, setVentasHistoricas] = useState([]);
+  const [busquedaPOS, setBusquedaPOS] = useState('');
+  
+  // Chat Juls
+  const [julsChat, setJulsChat] = useState([{ sender: 'Juls', text: '¡Qué onda Millan! Soy Juls. ¿Qué refacción le buscamos al cliente hoy?' }]);
+  const [julsInput, setJulsInput] = useState('');
+
+  // Utilidades de precio
+  const calcularPrecio = (costoBase) => +(costoBase * (1 + (margenGanancia / 100))).toFixed(2);
+  const totalCarrito = carrito.reduce((sum, item) => sum + (calcularPrecio(item.costoBase) * item.cantidad), 0);
+
+  // --- FUNCIONES POS ---
+  const agregarAlCarrito = (producto) => {
+    if (producto.stock <= 0) {
+      alert(`¡Socio, no hay existencia de ${producto.nombre}!`);
+      return;
+    }
+    const itemExistente = carrito.find(item => item.id === producto.id);
+    if (itemExistente) {
+      if (itemExistente.cantidad < producto.stock) {
+        setCarrito(carrito.map(item => item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item));
+      } else {
+        alert('Límite de stock alcanzado.');
+      }
+    } else {
+      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+    }
+  };
+
+  const quitarDelCarrito = (id) => setCarrito(carrito.filter(item => item.id !== id));
+
+  const cobrarYImprimir = () => {
+    if (carrito.length === 0) return;
+    
+    // Descontar inventario y registrar venta
+    const nuevoInventario = inventario.map(prod => {
+      const enCarrito = carrito.find(c => c.id === prod.id);
+      return enCarrito ? { ...prod, stock: prod.stock - enCarrito.cantidad } : prod;
+    });
+    
+    const nuevaVenta = {
+      id: Date.now(),
+      fecha: new Date().toLocaleString(),
+      total: totalCarrito,
+      items: [...carrito]
+    };
+
+    setInventario(nuevoInventario);
+    setVentasHistoricas([nuevaVenta, ...ventasHistoricas]);
+    
+    // Activar vista térmica
+    setIsPrinting(true);
+    setTimeout(() => {
+      window.print();
+      setIsPrinting(false);
+      setCarrito([]);
+    }, 800);
+  };
+
+  // --- ASISTENTE JULS LOGIC ---
+  const handleJulsSubmit = (e) => {
+    e.preventDefault();
+    if (!julsInput.trim()) return;
+
+    const newChat = [...julsChat, { sender: 'Millan', text: julsInput }];
+    setJulsChat(newChat);
+    const input = julsInput.toLowerCase();
+    setJulsInput('');
+
+    setTimeout(() => {
+      let respuestaJuls = "Socio, no capté bien la orden. Dime 'busca [pieza]', 'agrega [pieza]', o 'imprime ticket'.";
+      
+      if (input.includes('bobina')) {
+        const prod = inventario.find(i => i.nombre.toLowerCase().includes('bobina'));
+        if (prod) {
+          respuestaJuls = `Sí Millan, tenemos la ${prod.nombre}. Precio público ya con el ${margenGanancia}% es $${calcularPrecio(prod.costoBase)}. ¿La aviento al carrito?`;
+          // Autoselect for ease
+          window.julsTempProduct = prod; 
+        }
+      } else if (input.includes('agrega') || input.includes('sí') || input.includes('si')) {
+         if(window.julsTempProduct) {
+            agregarAlCarrito(window.julsTempProduct);
+            respuestaJuls = `¡Listo jefe! Agregué ${window.julsTempProduct.nombre} al ticket. ¿Algo más?`;
+            window.julsTempProduct = null;
+         } else {
+            respuestaJuls = "¿Qué agrego, socio? Menciona la pieza primero.";
+         }
+      } else if (input.includes('imprime') || input.includes('cobra') || input.includes('ya no')) {
+        if(carrito.length > 0) {
+          respuestaJuls = "¡Sale y vale! Mandando a la impresora térmica. 🖨️";
+          setTimeout(cobrarYImprimir, 1000);
+        } else {
+          respuestaJuls = "El carrito está vacío, Millan. ¡Hay que vender algo primero!";
+        }
+      }
+
+      setJulsChat(prev => [...prev, { sender: 'Juls', text: respuestaJuls }]);
+    }, 600);
+  };
+
+  // --- RENDER DE TICKET TÉRMICO ---
+  if (isPrinting) {
+    return (
+      <div className="bg-white text-black p-4 w-80 font-mono text-sm mx-auto mt-10">
+        <div className="text-center font-bold mb-4">
+          <h2 className="text-xl">ELÉCTRICAS MILLAN</h2>
+          <p className="text-xs font-normal">Av Vicente Guerrero s/n Col. Centro</p>
+          <p className="text-xs font-normal">Alpuyeca Morelos, Xochitepec</p>
+          <p className="text-xs font-normal">Tel: 7776838196 / 2219567392</p>
+          <p className="text-xs font-normal border-b border-black pb-2 mb-2">Ticket de Venta Premium</p>
+        </div>
         
-        // ENGRANES Y BENDIX
-        {c:"E7691809", n:"Engrane Marcha Dodge (2) E7691809", s:3, cost:30},
-        {c:"E7691810", n:"Engrane Marcha Ford Bosch (1) E7691810", s:3, cost:30},
-        {c:"7691820", n:"Engrane Marcha Nissan (4) 7691820", s:5, cost:29},
-        {c:"7691821", n:"Engrane Marcha VW Golf (5) 7691821", s:5, cost:29},
-        {c:"1224", n:"Bendix Zen Ford 10 Dientes", s:1, cost:114},
-
-        // MÓDULOS Y ARMADURAS
-        {c:"B55", n:"Módulo Encendido Nissan Tsuru 16V B55", s:1, cost:543},
-        {c:"A618114ASS", n:"Armadura Nissan Hitachi PMGR", s:3, cost:264},
-        {c:"A011097E", n:"Armadura Nissan Chevy Usatech", s:2, cost:264},
+        {carrito.map((item, idx) => (
+          <div key={idx} className="flex justify-between mb-1">
+            <span>{item.cantidad}x {item.nombre.substring(0, 15)}</span>
+            <span>${(calcularPrecio(item.costoBase) * item.cantidad).toFixed(2)}</span>
+          </div>
+        ))}
         
-        // FUSIBLES Y VARIOS
-        {c:"FC15A", n:"Fusible Clavija 15 Amp", s:100, cost:0.85},
-        {c:"CP18", n:"Cable Plástico Calibre 18 (30mts)", s:2, cost:88},
-        {c:"CP16", n:"Cable Plástico Calibre 16 (30mts)", s:2, cost:88},
-        {c:"BM70582", n:"Bulbo Motoventilador VW Caribe", s:3, cost:98},
-        {c:"B6305", n:"Balero 6305 NTN", s:3, cost:109},
-        {c:"B6304", n:"Balero 6304 NTN", s:3, cost:83}
-    ];
+        <div className="border-t border-black mt-2 pt-2 flex justify-between font-bold text-lg">
+          <span>TOTAL:</span>
+          <span>${totalCarrito.toFixed(2)}</span>
+        </div>
+        <div className="text-center mt-6 text-xs italic">
+          ¡Gracias por su compra!<br/>Sistema Propart Diagnostic
+        </div>
+      </div>
+    );
+  }
 
-    let db = []; let cart = []; let scanner = null;
+  // --- UI PRINCIPAL ---
+  return (
+    <div className="flex h-screen bg-slate-900 text-slate-100 font-sans">
+      
+      {/* SIDEBAR */}
+      <div className="w-64 bg-slate-800 shadow-xl flex flex-col border-r border-slate-700">
+        <div className="p-4 border-b border-slate-700">
+          <h1 className="text-2xl font-black text-blue-400 tracking-tight">Eléctricas<br/>Millan</h1>
+          <p className="text-xs text-slate-400 mt-1 font-semibold">PROPART DIAGNOSTIC SYS</p>
+        </div>
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          {[
+            { id: 'pos', icon: ShoppingCart, label: 'Punto de Venta' },
+            { id: 'inventory', icon: Package, label: 'Inventario' },
+            { id: 'juls', icon: Bot, label: 'Asistente Juls', color: 'text-yellow-400' },
+            { id: 'services', icon: Wrench, label: 'Taller / Servicios' },
+            { id: 'analytics', icon: BarChart3, label: 'Analíticas' },
+            { id: 'admin', icon: Settings, label: 'Administración' }
+          ].map(tab => (
+            <button 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)} 
+              className={`w-full flex items-center p-3 rounded-lg transition-all duration-200 ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'hover:bg-slate-700 text-slate-300'}`}
+            >
+              <tab.icon className={`mr-3 w-5 h-5 ${tab.color || ''}`}/> {tab.label}
+            </button>
+          ))}
+        </nav>
+      </div>
 
-    function init() {
-        let saved = localStorage.getItem('millan_v38_db');
-        if(saved) db = JSON.parse(saved);
-        else { db = RAW_DB.map(p => ({...p, p: Math.ceil(p.cost * 1.30)})); save(); }
-    }
-    init();
+      {/* ÁREA PRINCIPAL */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        
+        {/* HEADER SUCURSAL */}
+        <header className="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center">
+          <div className="flex items-center text-sm text-slate-300 bg-slate-900/50 px-3 py-1.5 rounded-full">
+            <MapPin className="w-4 h-4 mr-2 text-red-400"/>
+            Alpuyeca, Xochitepec
+          </div>
+          <div className="flex items-center text-sm text-slate-300 bg-slate-900/50 px-3 py-1.5 rounded-full">
+            <Phone className="w-4 h-4 mr-2 text-green-400"/>
+            777 683 8196
+          </div>
+        </header>
 
-    function save() { localStorage.setItem('millan_v38_db', JSON.stringify(db)); }
+        {/* CONTENEDOR DE TABS */}
+        <main className="flex-1 overflow-auto p-6 bg-slate-900">
+          
+          {/* TAB 1: PUNTO DE VENTA */}
+          {activeTab === 'pos' && (
+            <div className="flex h-full gap-6">
+              <div className="flex-1 flex flex-col gap-4">
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400"/>
+                    <input 
+                      type="text" 
+                      placeholder="Buscar refacción o código..." 
+                      value={busquedaPOS}
+                      onChange={(e) => setBusquedaPOS(e.target.value)}
+                      className="w-full bg-slate-800 border border-slate-600 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-blue-500 text-white"
+                    />
+                  </div>
+                  <button className="bg-slate-800 border border-slate-600 hover:bg-slate-700 px-4 rounded-lg flex items-center justify-center transition-colors" title="Escanear Código de Barras">
+                    <Camera className="w-6 h-6 text-blue-400" />
+                  </button>
+                  <button 
+                    onClick={() => window.open(`https://www.google.com/search?q=${busquedaPOS || 'autopartes'}`, '_blank')}
+                    className="bg-blue-600 hover:bg-blue-500 px-4 rounded-lg flex items-center font-bold text-sm transition-colors shadow-lg"
+                  >
+                    Google Search
+                  </button>
+                </div>
 
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('n-'+id).classList.add('active');
-        if(id==='pos') drawCart();
-        if(id==='admin') drawAdmin("");
-    }
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto pb-4">
+                  {inventario
+                    .filter(p => p.nombre.toLowerCase().includes(busquedaPOS.toLowerCase()) || p.id.includes(busquedaPOS))
+                    .map(prod => (
+                    <div 
+                      key={prod.id} 
+                      onClick={() => agregarAlCarrito(prod)}
+                      className={`bg-slate-800 p-4 rounded-lg border-2 transition-all cursor-pointer flex flex-col justify-between ${prod.stock > 0 ? 'border-slate-700 hover:border-blue-500 hover:scale-105' : 'border-red-900/50 opacity-60'}`}
+                    >
+                      <div>
+                        <span className="text-xs text-blue-400 font-bold uppercase tracking-wider">{prod.categoria}</span>
+                        <h3 className="font-bold text-sm mt-1 leading-tight">{prod.nombre}</h3>
+                      </div>
+                      <div className="mt-4 flex justify-between items-end">
+                        <span className="text-xl font-black text-green-400">${calcularPrecio(prod.costoBase).toFixed(2)}</span>
+                        <span className={`text-xs px-2 py-1 rounded font-bold ${prod.stock > 0 ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-400'}`}>
+                          {prod.stock > 0 ? `${prod.stock} disp.` : 'Agotado'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-    function doSearch(q) {
-        if(!q) { document.getElementById('results-view').style.display='none'; return; }
-        q = q.toUpperCase();
-        document.getElementById('results-view').style.display = 'block';
-        let res = db.filter(p => p.n.toUpperCase().includes(q) || p.c.toUpperCase().includes(q));
-        const list = document.getElementById('list-results'); list.innerHTML = "";
-        res.forEach(p => {
-            list.innerHTML += `<div class="card"><div><b>${p.n}</b><br><span class="stock-pill">Stock: ${p.s}</span></div><div style="text-align:right;"><div class="price">$${p.p}</div><button onclick="toCart('${p.c}')" style="background:#000;color:#fff;border:none;padding:8px 12px;border-radius:5px;cursor:pointer;">Cobrar</button></div></div>`;
-        });
-    }
+              {/* TICKET / CARRITO */}
+              <div className="w-80 bg-slate-800 rounded-xl flex flex-col border border-slate-700 shadow-2xl">
+                <div className="p-4 border-b border-slate-700 font-bold flex justify-between items-center bg-slate-800/50 rounded-t-xl">
+                  <span>Ticket Actual</span>
+                  <span className="bg-blue-600 px-2 py-0.5 rounded text-sm">{carrito.length}</span>
+                </div>
+                <div className="flex-1 p-4 overflow-auto space-y-3">
+                  {carrito.length === 0 ? (
+                    <div className="text-center text-slate-500 mt-10 flex flex-col items-center">
+                      <ShoppingCart className="w-12 h-12 mb-3 opacity-20"/>
+                      Escanea o selecciona refacciones
+                    </div>
+                  ) : (
+                    carrito.map(item => (
+                      <div key={item.id} className="flex justify-between items-center bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                        <div className="flex-1">
+                          <p className="text-sm font-bold truncate pr-2">{item.nombre}</p>
+                          <p className="text-xs text-blue-300">{item.cantidad} x ${(calcularPrecio(item.costoBase)).toFixed(2)}</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-green-400">${(calcularPrecio(item.costoBase) * item.cantidad).toFixed(2)}</span>
+                          <button onClick={() => quitarDelCarrito(item.id)} className="text-slate-500 hover:text-red-400 transition-colors"><Trash2 className="w-4 h-4"/></button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="p-4 bg-slate-900 rounded-b-xl border-t border-slate-700">
+                  <div className="flex justify-between text-xl font-black mb-4">
+                    <span>Total:</span>
+                    <span className="text-green-400">${totalCarrito.toFixed(2)}</span>
+                  </div>
+                  <button 
+                    onClick={cobrarYImprimir} 
+                    disabled={carrito.length === 0} 
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:from-slate-700 disabled:to-slate-700 p-4 rounded-lg font-bold flex items-center justify-center transition-all shadow-lg"
+                  >
+                    <Printer className="mr-2 w-5 h-5"/> Cobrar e Imprimir
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
-    function toCart(c) {
-        let item = db.find(x => x.c === c);
-        if(item && item.s > 0) {
-            cart.push(item); item.s--; save(); drawCart(); alert("¡Anotado carnal!");
-        } else alert("¡N'ombre carnal, ya no hay stock!");
-    }
+          {/* TAB 2: INVENTARIO */}
+          {activeTab === 'inventory' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center bg-slate-800 p-4 rounded-lg border border-slate-700">
+                <h2 className="text-2xl font-bold flex items-center"><Package className="mr-3 text-blue-400"/> Existencia Real</h2>
+                <button className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg flex items-center font-bold transition-colors">
+                  <Plus className="w-4 h-4 mr-2"/> Alta Producto
+                </button>
+              </div>
 
-    function drawCart() {
-        let t=0; const d=document.getElementById('cart-list'); d.innerHTML="";
-        cart.forEach((p,i)=>{ t+=p.p; d.innerHTML+=`<div style="display:flex;justify-content:space-between;background:white;padding:10px;border-bottom:1px solid #eee;"><span>${p.n}</span><span>$${p.p} <b onclick="cart.splice(${i},1);drawCart()" style="color:red;cursor:pointer">X</b></span></div>`; });
-        document.getElementById('cart-total').innerText="Total: $"+t;
-    }
+              <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden shadow-xl">
+                <table className="w-full text-left">
+                  <thead className="bg-slate-900 text-slate-300">
+                    <tr>
+                      <th className="p-4 font-semibold text-sm">ID</th>
+                      <th className="p-4 font-semibold text-sm">Descripción</th>
+                      <th className="p-4 font-semibold text-sm">Categoría</th>
+                      <th className="p-4 font-semibold text-sm">Stock</th>
+                      <th className="p-4 font-semibold text-sm">Costo Compra</th>
+                      <th className="p-4 font-semibold text-sm text-green-400">P. Público (+{margenGanancia}%)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-700">
+                    {inventario.map(prod => (
+                      <tr key={prod.id} className="hover:bg-slate-700/30 transition-colors">
+                        <td className="p-4 font-mono text-xs text-slate-400">{prod.id}</td>
+                        <td className="p-4 font-bold text-sm">{prod.nombre}</td>
+                        <td className="p-4 text-xs text-blue-300">{prod.categoria}</td>
+                        <td className="p-4">
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${prod.stock === 0 ? 'bg-red-900/80 text-red-200' : prod.stock < 3 ? 'bg-yellow-900/80 text-yellow-200' : 'bg-green-900/50 text-green-400'}`}>
+                            {prod.stock}
+                          </span>
+                        </td>
+                        <td className="p-4 text-slate-400 text-sm">${prod.costoBase.toFixed(2)}</td>
+                        <td className="p-4 text-green-400 font-bold text-sm">${calcularPrecio(prod.costoBase).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-    function finishSale() { if(cart.length>0){ window.print(); cart=[]; drawCart(); } }
+              {/* MAYOREO & MANUALES */}
+              <div className="grid grid-cols-2 gap-6 mt-6">
+                <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                  <h3 className="text-lg font-bold text-blue-400 flex items-center mb-4"><Phone className="w-5 h-5 mr-2"/> Proveedores Mayoreo</h3>
+                  <div className="space-y-3">
+                    {CONTACTOS_MAYOREO.map((c, i) => (
+                      <div key={i} className="bg-slate-900 p-3 rounded border border-slate-700">
+                        <p className="font-bold text-white">{c.empresa}</p>
+                        <p className="text-sm text-slate-400">{c.tel} | <span className="text-blue-400">{c.web}</span></p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                  <h3 className="text-lg font-bold text-blue-400 flex items-center mb-4"><BookOpen className="w-5 h-5 mr-2"/> Base de Datos Manuales</h3>
+                  <div className="space-y-3">
+                    {MANUALES_DB.map((m, i) => (
+                      <div key={i} className="bg-slate-900 p-3 rounded border border-slate-700 flex justify-between items-center cursor-pointer hover:border-blue-500">
+                        <p className="font-bold text-sm text-white">{m.titulo}</p>
+                        <span className="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">{m.tipo}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-    function goGoogle() { window.open("https://www.google.com/search?tbm=isch&q="+(document.getElementById('main-in').value || "refaccion"), "_blank"); }
+          {/* TAB 3: ASISTENTE JULS */}
+          {activeTab === 'juls' && (
+            <div className="max-w-4xl mx-auto h-full flex flex-col bg-slate-800 rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
+              <div className="p-6 bg-gradient-to-r from-blue-900 to-slate-900 border-b border-blue-800 flex items-center">
+                <div className="bg-slate-900 p-3 rounded-full mr-4 border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                  <Bot className="w-8 h-8 text-yellow-400"/>
+                </div>
+                <div>
+                  <h2 className="font-black text-2xl tracking-tight text-white">JULS - Inteligencia Propart</h2>
+                  <p className="text-sm text-blue-300 font-medium">Asistente de ventas y diagnóstico en línea</p>
+                </div>
+              </div>
+              <div className="flex-1 p-6 overflow-auto space-y-4 bg-slate-900/50">
+                {julsChat.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.sender === 'Millan' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[75%] p-4 rounded-2xl shadow-md ${msg.sender === 'Millan' ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-slate-700 text-slate-100 rounded-tl-sm border border-slate-600'}`}>
+                      <p className="text-xs font-black mb-1 opacity-70 uppercase tracking-wider">{msg.sender}</p>
+                      <p className="text-base leading-relaxed">{msg.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <form onSubmit={handleJulsSubmit} className="p-4 bg-slate-800 border-t border-slate-700 flex gap-3">
+                <input 
+                  type="text" 
+                  value={julsInput}
+                  onChange={(e) => setJulsInput(e.target.value)}
+                  placeholder="Ej: Juls tenemos bobina Nissan... o Agrega eso al carrito..." 
+                  className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 text-white text-lg placeholder-slate-500"
+                />
+                <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-6 font-bold rounded-lg transition-colors">Enviar</button>
+              </form>
+            </div>
+          )}
 
-    function toggleCam() {
-        const r = document.getElementById('reader');
-        if(r.style.display==='block'){ r.style.display='none'; scanner.clear(); }
-        else { r.style.display='block'; scanner = new Html5QrcodeScanner("reader", {fps:10, qrbox:250}); scanner.render(txt => toCart(txt)); }
-    }
+          {/* TAB 4: SERVICIOS Y TALLER */}
+          {activeTab === 'services' && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-8 rounded-xl border border-slate-700 text-center shadow-2xl">
+                <Wrench className="w-16 h-16 text-blue-500 mx-auto mb-4"/>
+                <h2 className="text-3xl font-black text-white mb-2">Taller y Servicios a Domicilio</h2>
+                <p className="text-slate-400 text-lg">Propart Diagnostic - Expertos en Electromecánica</p>
+              </div>
 
-    function askPin() { if(prompt("PIN:")==="1234") showPage('admin'); }
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[
+                  { titulo: "Diagnóstico con Osciloscopio", desc: "Análisis preciso de señales de sensores, CKP, CMP, redes CAN Bus. Cero adivinanzas.", precio: "$800.00" },
+                  { titulo: "Escaneo Propart Premium", desc: "Lectura de códigos, línea de datos en vivo, ajustes de cuerpo de aceleración y adaptaciones.", precio: "$400.00" },
+                  { titulo: "Reparación de Computadoras (ECU)", desc: "Diagnóstico de daño en placa, cambio de drivers de inyección, mosfets y soldadura SMD.", precio: "Previa Cotización" },
+                  { titulo: "Servicio a Domicilio", desc: "Unidad móvil equipada para diagnósticos y reparaciones eléctricas donde te quedes tirado.", precio: "+ $250.00 (Zona)" },
+                  { titulo: "Fallas Intermitentes", desc: "Especialistas en cortos circuitos, fugas de corriente y fallas fantasmas en sistemas eléctricos.", precio: "Por Hora" },
+                  { titulo: "Sistema de Luces y Tableros", desc: "Adaptaciones de fusileras, reparación de cuadros de instrumentos y conversión a LED.", precio: "Variable" }
+                ].map((s, i) => (
+                  <div key={i} className="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-blue-500 transition-colors shadow-lg group">
+                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{s.titulo}</h3>
+                    <p className="text-sm text-slate-400 mb-4 h-16">{s.desc}</p>
+                    <div className="border-t border-slate-700 pt-4 flex justify-between items-center">
+                      <span className="text-xs text-slate-500 font-bold uppercase">Costo Base</span>
+                      <span className="font-black text-green-400">{s.precio}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-    function drawAdmin(f) {
-        f = f.toUpperCase(); const b = document.getElementById('admin-tbody'); b.innerHTML = "";
-        let totalVal = 0;
-        db.forEach(p => {
-            if(p.n.toUpperCase().includes(f) || p.c.toUpperCase().includes(f)) {
-                totalVal += (p.cost * p.s);
-                b.innerHTML += `<tr><td><b>${p.n}</b><br><small>${p.c}</small></td><td>${p.s}</td><td>$${p.cost}</td><td style="color:green;font-weight:bold;">$${p.p}</td></tr>`;
-            }
-        });
-        document.getElementById('total-inv-val').innerText = "INVERSIÓN: $" + totalVal.toLocaleString();
-    }
+          {/* TAB 5: ANALÍTICAS */}
+          {activeTab === 'analytics' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold mb-6 flex items-center"><TrendingUp className="w-6 h-6 mr-3 text-blue-400"/> Analíticas y Tendencias</h2>
+              
+              <div className="grid grid-cols-3 gap-6">
+                <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                  <p className="text-slate-400 font-bold mb-1">Ventas del Día</p>
+                  <p className="text-4xl font-black text-white">${ventasHistoricas.reduce((sum, v) => sum + v.total, 0).toFixed(2)}</p>
+                  <p className="text-sm text-green-400 mt-2 flex items-center"><TrendingUp className="w-4 h-4 mr-1"/> +12% vs ayer</p>
+                </div>
+                <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                  <p className="text-slate-400 font-bold mb-1">Tickets Generados</p>
+                  <p className="text-4xl font-black text-white">{ventasHistoricas.length}</p>
+                </div>
+                <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                  <p className="text-slate-400 font-bold mb-1">Pieza más vendida</p>
+                  <p className="text-2xl font-bold text-blue-400 truncate">Solenoide Acurat</p>
+                </div>
+              </div>
 
-    function resetSystem() { if(confirm("¿Recargar las 10 hojas?")) { localStorage.clear(); location.reload(); } }
+              <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 mt-6">
+                <h3 className="text-lg font-bold mb-4">Historial de Operaciones</h3>
+                {ventasHistoricas.length === 0 ? (
+                  <p className="text-slate-500 text-center py-4">No hay ventas registradas aún hoy.</p>
+                ) : (
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-slate-900">
+                      <tr>
+                        <th className="p-3">Ticket ID</th>
+                        <th className="p-3">Hora</th>
+                        <th className="p-3">Artículos</th>
+                        <th className="p-3 text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-700">
+                      {ventasHistoricas.map((v, i) => (
+                        <tr key={i}>
+                          <td className="p-3 font-mono text-slate-400">#{v.id.toString().slice(-6)}</td>
+                          <td className="p-3">{v.fecha}</td>
+                          <td className="p-3">{v.items.length} pzas</td>
+                          <td className="p-3 text-right font-bold text-green-400">${v.total.toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          )}
 
-    // --- YULS INTERACTIVO ---
-    function startYuls() {
-        if(!window.webkitSpeechRecognition) return alert("Usa Chrome carnal");
-        const rec = new webkitSpeechRecognition(); rec.lang = "es-MX";
-        document.getElementById('yuls-trigger').classList.add('active');
-        speak("¿Qué onda Millán? ¿Qué pieza buscamos carnal?");
+          {/* TAB 6: ADMIN (PROTECCIÓN POR CONTRASEÑA) */}
+          {activeTab === 'admin' && (
+            <div className="max-w-2xl mx-auto mt-10">
+              {!isAdmin ? (
+                <div className="bg-slate-800 p-8 rounded-xl border border-slate-700 text-center shadow-2xl">
+                  <Lock className="w-16 h-16 text-slate-500 mx-auto mb-4"/>
+                  <h2 className="text-2xl font-bold mb-2">Panel de Administrador</h2>
+                  <p className="text-slate-400 mb-6">Ingresa la llave maestra para ajustar utilidades y sistema.</p>
+                  <form onSubmit={(e) => { e.preventDefault(); if(adminPassword === 'millan123') setIsAdmin(true); else alert('Contraseña incorrecta'); }} className="flex gap-2 justify-center">
+                    <input type="password" placeholder="Contraseña..." value={adminPassword} onChange={e=>setAdminPassword(e.target.value)} className="bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-center text-white" />
+                    <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-6 font-bold rounded-lg transition-colors">Entrar</button>
+                  </form>
+                </div>
+              ) : (
+                <div className="bg-slate-800 p-8 rounded-xl border border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                  <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-700">
+                    <h2 className="text-2xl font-bold flex items-center"><Unlock className="w-6 h-6 mr-3 text-green-400"/> Admin Desbloqueado</h2>
+                    <button onClick={() => {setIsAdmin(false); setAdminPassword('');}} className="text-slate-400 hover:text-white text-sm underline">Cerrar Sesión</button>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div className="bg-slate-900 p-6 rounded-lg border border-slate-700">
+                      <h3 className="text-lg font-bold mb-2">Ajuste de Utilidad Global</h3>
+                      <p className="text-sm text-slate-400 mb-4">Ajusta el porcentaje de ganancia. Esto actualizará el precio al público de <strong>todo el inventario</strong> en automático.</p>
+                      <div className="flex items-center gap-4">
+                        <input 
+                          type="range" 
+                          min="10" max="100" step="5"
+                          value={margenGanancia} 
+                          onChange={(e) => setMargenGanancia(Number(e.target.value))}
+                          className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <div className="bg-slate-800 border border-blue-500 text-blue-400 font-black text-2xl px-4 py-2 rounded-lg w-24 text-center">
+                          {margenGanancia}%
+                        </div>
+                      </div>
+                    </div>
 
-        rec.onresult = (e) => {
-            let text = e.results[0][0].transcript.toLowerCase();
-            let q = text.replace(/yuls|busca|tienes|hay|el|la|un|una|de|válvulas/g, "").trim();
-            let found = db.find(p => q.split(" ").every(w => p.n.toLowerCase().includes(w)));
-            
-            if(found) {
-                speak("¡Esa sí la tengo carnal! Es el " + found.n + " en " + found.p + " varos. ¿Quieres que lo agregue carnal?", () => {
-                    setTimeout(() => {
-                        const confirmRec = new webkitSpeechRecognition(); confirmRec.lang = "es-MX";
-                        confirmRec.onresult = (e2) => {
-                            if(e2.results[0][0].transcript.toLowerCase().includes("si") || e2.results[0][0].transcript.toLowerCase().includes("agrega")) {
-                                toCart(found.c); speak("¡Arre carnal! Lo imprimo de volada.");
-                                setTimeout(() => finishSale(), 1500);
-                            }
-                        };
-                        confirmRec.start();
-                    }, 500);
-                });
-                showPage('home'); doSearch(q);
-            } else speak("Híjole Millán, esa no la topo carnal.");
-        };
-        rec.onend = () => document.getElementById('yuls-trigger').classList.remove('active');
-        rec.start();
-    }
+                    <div className="bg-yellow-900/20 p-4 rounded-lg border border-yellow-700/50 flex items-start">
+                      <AlertCircle className="w-5 h-5 text-yellow-500 mr-3 mt-0.5 shrink-0"/>
+                      <div>
+                        <p className="font-bold text-yellow-500 text-sm">Modo Admin Activo</p>
+                        <p className="text-xs text-yellow-200/70 mt-1">Desde aquí próximamente podrás borrar historial de ventas, purgar inventario muerto y exportar bases de datos a Excel.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
-    function speak(m, cb) {
-        window.speechSynthesis.cancel();
-        let u = new SpeechSynthesisUtterance(m); u.lang = "es-MX"; u.rate = 1.1;
-        if(cb) u.onend = cb;
-        window.speechSynthesis.speak(u);
-    }
-</script>
-</body>
-</html>
+        </main>
+      </div>
+    </div>
+  );
+}
